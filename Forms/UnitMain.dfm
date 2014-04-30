@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'TPhotoDownloader'
+  Caption = 'TFlickrDownloader'
   ClientHeight = 562
   ClientWidth = 684
   Color = clBtnFace
@@ -27,7 +27,7 @@ object MainForm: TMainForm
     Height = 21
     Panels = <
       item
-        Text = 'TPhotoDownloader 0.2'
+        Text = 'TFlickrDownloader 0.2'
         Width = 190
       end
       item

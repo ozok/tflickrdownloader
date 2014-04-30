@@ -1,20 +1,20 @@
 { *
   * Copyright (C) 2014 ozok <ozok26@gmail.com>
   *
-  * This file is part of TPhotoDownloader.
+  * This file is part of TFlickrDownloader.
   *
-  * TPhotoDownloader is free software: you can redistribute it and/or modify
+  * TFlickrDownloader is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
   *
-  * TPhotoDownloader is distributed in the hope that it will be useful,
+  * TFlickrDownloader is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
   *
   * You should have received a copy of the GNU General Public License
-  * along with TPhotoDownloader.  If not, see <http://www.gnu.org/licenses/>.
+  * along with TFlickrDownloader.  If not, see <http://www.gnu.org/licenses/>.
   *
   * }
 
@@ -23,7 +23,7 @@ unit UnitImagePagesExtractor;
 interface
 
 uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes, Dialogs, JvHtmlParser;
+  JvUrlListGrabber, JvUrlGrabbers, JvTypes;
 
 type
   TIPEStatus = (iesDownloading, iesDone, iesError);
@@ -32,7 +32,6 @@ type
   TImagePagesExtractor = class(TObject)
   private
     FPageDownloader: TJvHttpUrlGrabber;
-    FHtmlParser: TJvHTMLParser;
     FStatus: TIPEStatus;
     FURL: string;
     FErrorMsg: string;
@@ -48,19 +47,6 @@ type
     procedure PageDownloaderProgress(Sender: TObject;
       Position, TotalSize: Int64; Url: string; var Continue: Boolean);
     procedure PageDownloaderError(Sender: TObject; ErrorMsg: string);
-    procedure PageDownloaderStatusChange(Sender: TObject);
-    procedure PageDownloaderRequestSent(Sender: TObject);
-    procedure PageDownloaderRequestComplete(Sender: TObject);
-    procedure PageDownloaderRedirect(Sender: TObject);
-    procedure PageDownloaderReceivingResponse(Sender: TObject);
-    procedure PageDownloaderNameResolved(Sender: TObject);
-    procedure PageDownloaderConnectedToServer(Sender: TObject);
-    procedure PageDownloaderConnectingToServer(Sender: TObject);
-    procedure PageDownloaderConnectionClosed(Sender: TObject);
-    procedure PageDownloaderClosingConnection(Sender: TObject);
-    procedure PageDownloaderResponseReceived(Sender: TObject);
-    procedure PageDownloaderSendingRequest(Sender: TObject);
-    procedure KeyFound(Sender: TObject; Key, Results, OriginalLine: string);
 
     function RemoveHTMLTags(const Str: string): string;
     function RemoveWith(const Str: string):string;
@@ -85,8 +71,7 @@ implementation
 
 { TImagePagesExtractor }
 
-constructor TImagePagesExtractor.Create(const Url: string;
-  const TempFile: string; const OutputFilePath: string);
+constructor TImagePagesExtractor.Create(const Url: string; const TempFile: string; const OutputFilePath: string);
 var
   Def: TJvCustomUrlGrabberDefaultProperties;
 begin
@@ -98,27 +83,10 @@ begin
     OnDoneFile := PageDownloaderDoneFile;
     OnProgress := PageDownloaderProgress;
     OnError := PageDownloaderError;
-    OnNameResolved := PageDownloaderNameResolved;
-    OnConnectingToServer := PageDownloaderConnectingToServer;
-    OnConnectedToServer := PageDownloaderConnectedToServer;
-    OnSendingRequest := PageDownloaderSendingRequest;
-    OnRequestSent := PageDownloaderRequestSent;
-    OnRequestComplete := PageDownloaderRequestComplete;
-    OnReceivingResponse := PageDownloaderReceivingResponse;
-    OnResponseReceived := PageDownloaderResponseReceived;
-    OnClosingConnection := PageDownloaderClosingConnection;
-    OnConnectionClosed := PageDownloaderConnectionClosed;
-    OnRedirect := PageDownloaderRedirect;
-    OnStatusChange := PageDownloaderStatusChange;
     OutputMode := omFile;
     FileName := TempFile;
     Agent := '';
   end;
-  FHtmlParser := TJvHTMLParser.Create(nil);
-  FHtmlParser.OnKeyFound := KeyFound;
-//  FHtmlParser.Parser.Add('URL');
-  FHtmlParser.ClearConditions;
-  FHtmlParser.AddCondition('','><a data-track="photo-click" href="', '" title="" class=',-1);
 
   // decide if link belongs to a group
   FGroup := ContainsText(Url, '/groups/');
@@ -176,35 +144,6 @@ begin
   end;
 end;
 
-procedure TImagePagesExtractor.KeyFound(Sender: TObject; Key, Results, OriginalLine: string);
-begin
-  if Length(Results) > 0 then
-  begin
-  FGroupLinks.Add(Results);
-  end;
-end;
-
-procedure TImagePagesExtractor.PageDownloaderClosingConnection(Sender: TObject);
-begin
-  FStatusText := 'Closing connection';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderConnectedToServer(Sender: TObject);
-begin
-  FStatusText := 'Connected to server';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderConnectingToServer(
-  Sender: TObject);
-begin
-   FStatusText := 'Connecting to server';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderConnectionClosed(Sender: TObject);
-begin
-  FStatusText := 'Connection closed';
-end;
-
 procedure TImagePagesExtractor.PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
 const
   PhotoContainerStr = '<span class="photo_container pc_ju">';
@@ -230,9 +169,7 @@ begin
     begin
       if FGroup then
       begin
-        FHtmlParser.FileName := FileName;
-        FHtmlParser.AnalyseFile;
-        FGroupLinks.SaveToFile(FOutputFilePath, TEncoding.UTF8);
+        // todo: group support
       end
       else
       begin
@@ -274,58 +211,16 @@ begin
 
 end;
 
-procedure TImagePagesExtractor.PageDownloaderError(Sender: TObject;
-  ErrorMsg: string);
+procedure TImagePagesExtractor.PageDownloaderError(Sender: TObject; ErrorMsg: string);
 begin
   Self.Stop;
   FErrorMsg := ErrorMsg;
 end;
 
-procedure TImagePagesExtractor.PageDownloaderNameResolved(Sender: TObject);
-begin
-  FStatusText := 'Name resolved';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderProgress(Sender: TObject;
-  Position, TotalSize: Int64; Url: string; var Continue: Boolean);
+procedure TImagePagesExtractor.PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
   if TotalSize > 0 then
     FPercentage := (100 * Position) div TotalSize
-end;
-
-procedure TImagePagesExtractor.PageDownloaderReceivingResponse(Sender: TObject);
-begin
-   FStatusText := 'Receiving response';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderRedirect(Sender: TObject);
-begin
-   FStatusText := 'Downloader redirect';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderRequestComplete(Sender: TObject);
-begin
-    FStatusText := 'Request complete';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderRequestSent(Sender: TObject);
-begin
-   FStatusText := 'Request sent';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderResponseReceived(Sender: TObject);
-begin
-    FStatusText := 'Response received';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderSendingRequest(Sender: TObject);
-begin
-    FStatusText := 'Sending request';
-end;
-
-procedure TImagePagesExtractor.PageDownloaderStatusChange(Sender: TObject);
-begin
-    FStatusText := 'Status changed';
 end;
 
 function TImagePagesExtractor.RemoveHTMLTags(const Str: string): string;

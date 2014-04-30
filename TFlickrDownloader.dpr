@@ -1,4 +1,4 @@
-program TPhotoDownloader;
+program TFlickrDownloader;
 
 uses
   madExcept,
@@ -39,7 +39,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'TPhotoDownloader';
+  Application.Title := 'TFlickrDownloader';
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TNewProjectForm, NewProjectForm);
   Application.CreateForm(TSettingsForm, SettingsForm);

@@ -1,20 +1,20 @@
 { *
   * Copyright (C) 2014 ozok <ozok26@gmail.com>
   *
-  * This file is part of TPhotoDownloader.
+  * This file is part of TFlickrDownloader.
   *
-  * TPhotoDownloader is free software: you can redistribute it and/or modify
+  * TFlickrDownloader is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
   *
-  * TPhotoDownloader is distributed in the hope that it will be useful,
+  * TFlickrDownloader is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
   *
   * You should have received a copy of the GNU General Public License
-  * along with TPhotoDownloader.  If not, see <http://www.gnu.org/licenses/>.
+  * along with TFlickrDownloader.  If not, see <http://www.gnu.org/licenses/>.
   *
   * }
 
@@ -459,7 +459,7 @@ begin
   begin
     if not InitializeTaskbarAPI then
     begin
-      Application.MessageBox('You seem to have Windows 7 but TPhotoDownloader can''t start taskbar progressbar!', 'Error', MB_ICONERROR);
+      Application.MessageBox('You seem to have Windows 7 but TFlickrDownloader can''t start taskbar progressbar!', 'Error', MB_ICONERROR);
     end;
   end;
 
@@ -867,7 +867,7 @@ begin
     ThreadPageEdit.Text := 'N/A';
   end;
   // form caption
-  self.Caption := '[' + FloatToStr(LTotalProgress) + '% ' + FloatToStr(LThreadProgress) + '% ' + FloatToStr(LThreadCurProgress) + '%] TPhotoDownloader - ' + ProjectInfo.Name;
+  self.Caption := '[' + FloatToStr(LTotalProgress) + '% ' + FloatToStr(LThreadProgress) + '% ' + FloatToStr(LThreadCurProgress) + '%] TFlickrDownloader - ' + ProjectInfo.Name;
 
   // done
   if not LStillRunning then
@@ -921,7 +921,7 @@ begin
   StartBtn.Enabled := True;
   OpenProjectFolderBtn.Enabled := True;
 
-  self.Caption := 'TPhotoDownloader - ' + ProjectInfo.Name;
+  self.Caption := 'TFlickrDownloader - ' + ProjectInfo.Name;
 end;
 
 procedure TMainForm.ProjectUnLoadedStatus;
@@ -934,7 +934,7 @@ begin
   StartBtn.Enabled := False;
   OpenProjectFolderBtn.Enabled := False;
 
-  self.Caption := 'TPhotoDownloader';
+  self.Caption := 'TFlickrDownloader';
 end;
 
 procedure TMainForm.RefreshDownloadedImageListClick(Sender: TObject);
@@ -1008,7 +1008,7 @@ begin
       if OpenKey('\Software\Classes\.fpd', True) then
         WriteString('', 'FPDFile');
       if OpenKey('\Software\Classes\FPDFile', True) then
-        WriteString('', 'TPhotoDownloader Project File');
+        WriteString('', 'TFlickrDownloader Project File');
       if OpenKey('\Software\Classes\FPDFile\DefaultIcon', True) then
         WriteString('', Application.ExeName);
       if OpenKey('\Software\Classes\FPDFile\shell\open\command', True) then
@@ -1299,7 +1299,7 @@ begin
   TotalProgressBar.Progress := 0;
   PageProgressBar.Progress := 0;
   CurrentProgressBar.Progress := 0;
-  self.Caption := 'TPhotoDownloader - ' + ProjectInfo.Name;
+  self.Caption := 'TFlickrDownloader - ' + ProjectInfo.Name;
 
   self.BringToFront;
   ProjectLoadedStatus;

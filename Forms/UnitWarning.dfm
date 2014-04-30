@@ -50,7 +50,6 @@ object WarningForm: TWarningForm
     Enabled = False
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 113
   end
   object Button2: TButton
     Left = 481
@@ -61,7 +60,6 @@ object WarningForm: TWarningForm
     Caption = 'Close'
     TabOrder = 2
     OnClick = Button2Click
-    ExplicitTop = 113
   end
   object OKRDBtn: TRadioButton
     Left = 8

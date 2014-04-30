@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{5D67EBE2-5AE3-4CA1-93C6-6CCAAD39F496}</ProjectGuid>
-        <MainSource>TPhotoDownloader.dpr</MainSource>
+        <MainSource>TFlickrDownloader.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <TargetedPlatforms>3</TargetedPlatforms>
@@ -98,10 +98,10 @@
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_MapFile>3</DCC_MapFile>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.3.0.612;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.3.0.616;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Build>612</VerInfo_Build>
+        <VerInfo_Build>616</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -174,7 +174,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">TPhotoDownloader.dpr</Source>
+                    <Source Name="MainSource">TFlickrDownloader.dpr</Source>
                 </Source>
                 <VersionInfo>
                     <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
