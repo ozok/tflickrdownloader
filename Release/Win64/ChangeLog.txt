@@ -1,0 +1,7 @@
+--0.2
+-Added: Exif tags like camera, software and focal length will be written
+-Added: Image file extension will be changed according to real file type
+-Added: Program will show its icon instead of empty area when no image is selected
+
+--0.1
+-First release
