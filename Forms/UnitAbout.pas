@@ -23,12 +23,15 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label3: TLabel;
+    Button4: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label6Click(Sender: TObject);
     procedure Label7Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -55,6 +58,18 @@ end;
 procedure TAboutForm.Button3Click(Sender: TObject);
 begin
   ShellExecute(0, 'open', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YHZYV3F9LHEDL', nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TAboutForm.Button4Click(Sender: TObject);
+begin
+  ShellExecute(0, 'open', 'https://tphotodownloader.codeplex.com/', nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TAboutForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Self.Close;
 end;
 
 procedure TAboutForm.Label1Click(Sender: TObject);

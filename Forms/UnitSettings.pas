@@ -43,6 +43,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Button1Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
 
@@ -94,6 +95,13 @@ begin
   begin
     ThreadNumberEdit.MaxValue := CPUCount;
   end;
+end;
+
+procedure TSettingsForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Self.Close;
 end;
 
 procedure TSettingsForm.FormShow(Sender: TObject);

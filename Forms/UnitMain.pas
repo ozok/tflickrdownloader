@@ -32,7 +32,7 @@ uses
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, JvLED, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers;
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop;
 
 type
   TDownloadItemInfo = packed record
@@ -134,6 +134,7 @@ type
     L1: TMenuItem;
     UpdateThread: TJvThread;
     UpdateDownloader: TJvHttpUrlGrabber;
+    DragDrop: TJvDragDrop;
     procedure FormCreate(Sender: TObject);
     procedure NewProjectBtnClick(Sender: TObject);
     procedure StartBtnClick(Sender: TObject);
@@ -164,6 +165,7 @@ type
     procedure L1Click(Sender: TObject);
     procedure UpdateThreadExecute(Sender: TObject; Params: Pointer);
     procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
+    procedure DragDropDrop(Sender: TObject; Pos: TPoint; Value: TStrings);
   private
     { Private declarations }
 
@@ -348,6 +350,26 @@ begin
   if (Key = VK_DOWN) or (Key = VK_UP) then
   begin
     DownloadedImageListClick(self);
+  end;
+end;
+
+procedure TMainForm.DragDropDrop(Sender: TObject; Pos: TPoint; Value: TStrings);
+begin
+  if LowerCase(ExtractFileExt(Value[0])) = '.fpd' then
+  begin
+    if LoadProject(Value[0], ProjectInfo) then
+    begin
+      ProjectFilePath := Value[0];
+      ProjectLoadedStatus;
+      // photos downloaded
+      RefreshDownloadedImageListClick(self);
+    end
+    else
+    begin
+      ProjectUnLoadedStatus;
+      ProjectFilePath := '';
+      Application.MessageBox('Could not open project file.', 'Error', MB_ICONERROR);
+    end;
   end;
 end;
 

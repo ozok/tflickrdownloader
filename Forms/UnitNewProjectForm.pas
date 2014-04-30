@@ -51,6 +51,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GetPageCountBtnClick(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     // removes invalid chars from string
@@ -87,6 +88,13 @@ procedure TNewProjectForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   MainForm.Enabled := true;
   MainForm.BringToFront;
+end;
+
+procedure TNewProjectForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    CancelBtnClick(Self);
 end;
 
 procedure TNewProjectForm.GetPageCountBtnClick(Sender: TObject);

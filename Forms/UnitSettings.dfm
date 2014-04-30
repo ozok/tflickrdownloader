@@ -12,11 +12,13 @@ object SettingsForm: TSettingsForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   DesignSize = (
     248
@@ -40,7 +42,6 @@ object SettingsForm: TSettingsForm
     TabOrder = 0
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 86
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8

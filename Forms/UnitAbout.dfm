@@ -4,7 +4,7 @@ object AboutForm: TAboutForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'About'
-  ClientHeight = 180
+  ClientHeight = 226
   ClientWidth = 269
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,25 +12,26 @@ object AboutForm: TAboutForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnKeyDown = FormKeyDown
   DesignSize = (
     269
-    180)
+    226)
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
     Left = 8
     Top = 8
     Width = 253
-    Height = 133
+    Height = 148
     ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    ExplicitHeight = 263
     object TabSheet1: TTabSheet
       Caption = 'About'
-      ExplicitHeight = 235
+      ExplicitHeight = 105
       object Image1: TImage
         Left = 0
         Top = 0
@@ -370,7 +371,7 @@ object AboutForm: TAboutForm
     object TabSheet2: TTabSheet
       Caption = '3rd Party'
       ImageIndex = 1
-      ExplicitHeight = 235
+      ExplicitHeight = 109
       object Label1: TLabel
         Left = 0
         Top = 13
@@ -439,36 +440,43 @@ object AboutForm: TAboutForm
     end
   end
   object Button1: TButton
-    Left = 186
-    Top = 147
-    Width = 75
+    Left = 151
+    Top = 193
+    Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'OK'
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 277
   end
   object Button2: TButton
     Left = 8
-    Top = 147
-    Width = 75
+    Top = 162
+    Width = 110
     Height = 25
     Anchors = [akLeft, akBottom]
-    Caption = 'Home'
+    Caption = 'Sourceforge Page'
     TabOrder = 2
     OnClick = Button2Click
-    ExplicitTop = 277
   end
   object Button3: TButton
-    Left = 89
-    Top = 147
-    Width = 75
+    Left = 8
+    Top = 193
+    Width = 110
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Donate'
     TabOrder = 3
     OnClick = Button3Click
-    ExplicitTop = 277
+  end
+  object Button4: TButton
+    Left = 151
+    Top = 162
+    Width = 110
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = 'Codeplex Page'
+    TabOrder = 4
+    OnClick = Button4Click
   end
 end

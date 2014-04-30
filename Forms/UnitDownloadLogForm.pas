@@ -36,6 +36,7 @@ type
     Label1: TsLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure LogListDblClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -55,6 +56,13 @@ procedure TDownloadLogForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   MainForm.Enabled := True;
   MainForm.BringToFront;
+end;
+
+procedure TDownloadLogForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Self.Close;
 end;
 
 procedure TDownloadLogForm.LogListDblClick(Sender: TObject);

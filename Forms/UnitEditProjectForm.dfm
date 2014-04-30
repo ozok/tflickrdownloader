@@ -12,9 +12,11 @@ object EditProjectForm: TEditProjectForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
+  OnKeyDown = FormKeyDown
   DesignSize = (
     514
     156)

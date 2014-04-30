@@ -1,3 +1,9 @@
+--0.3
+-Added: Project files now can be drag&dropped to program window
+-Added: Shortcuts to most of the menu items
+-Added: Pressing "ESC" button will close all windows
+-Added: Link to codeplex.com project page
+
 --0.2
 -Added: Exif tags like camera, software and focal length will be written
 -Added: Image file extension will be changed according to real file type

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'TPhoto Downloader'
+  Caption = 'TPhotoDownloader'
   ClientHeight = 562
   ClientWidth = 684
   Color = clBtnFace
@@ -144,10 +144,6 @@ object MainForm: TMainForm
       Caption = 'Project Status'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         676
         452)
@@ -3089,25 +3085,30 @@ object MainForm: TMainForm
       object C1: TMenuItem
         Caption = 'Create a new project'
         ImageIndex = 1
+        ShortCut = 16462
         OnClick = NewProjectBtnClick
       end
       object E1: TMenuItem
         Caption = 'Edit project'
         ImageIndex = 2
+        ShortCut = 16453
         OnClick = EditProjectBtnClick
       end
       object O2: TMenuItem
         Caption = 'Open project folder'
         ImageIndex = 6
+        ShortCut = 24655
         OnClick = OpenProjectFolderBtnClick
       end
       object C2: TMenuItem
         Caption = 'Close the project'
         ImageIndex = 3
+        ShortCut = 16451
         OnClick = CloseProjectBtnClick
       end
       object E2: TMenuItem
         Caption = 'Exit'
+        ShortCut = 16472
         OnClick = E2Click
       end
     end
@@ -3132,6 +3133,7 @@ object MainForm: TMainForm
       object S3: TMenuItem
         Caption = 'Settings'
         ImageIndex = 7
+        ShortCut = 16464
         OnClick = SettingsBtnClick
       end
     end
@@ -3139,6 +3141,7 @@ object MainForm: TMainForm
       Caption = 'Help'
       object H2: TMenuItem
         Caption = 'Help'
+        ShortCut = 112
         OnClick = H2Click
       end
       object C3: TMenuItem
@@ -3579,5 +3582,11 @@ object MainForm: TMainForm
     OnDoneStream = UpdateDownloaderDoneStream
     Left = 576
     Top = 288
+  end
+  object DragDrop: TJvDragDrop
+    DropTarget = Owner
+    OnDrop = DragDropDrop
+    Left = 576
+    Top = 344
   end
 end

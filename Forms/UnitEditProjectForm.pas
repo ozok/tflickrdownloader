@@ -53,6 +53,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GetPageCountBtnClick(Sender: TObject);
     procedure SaveBtnClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -77,6 +78,13 @@ procedure TEditProjectForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   MainForm.Enabled := true;
   MainForm.BringToFront;
+end;
+
+procedure TEditProjectForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    CancelBtnClick(Self);
 end;
 
 procedure TEditProjectForm.GetPageCountBtnClick(Sender: TObject);
