@@ -27,7 +27,7 @@ object MainForm: TMainForm
     Height = 21
     Panels = <
       item
-        Text = 'TFlickrDownloader 0.2'
+        Text = 'TFlickrDownloader 0.3'
         Width = 190
       end
       item
@@ -135,7 +135,7 @@ object MainForm: TMainForm
     Top = 58
     Width = 684
     Height = 483
-    ActivePage = sTabSheet2
+    ActivePage = sTabSheet1
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 1

@@ -4,7 +4,7 @@ object AboutForm: TAboutForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'About'
-  ClientHeight = 226
+  ClientHeight = 210
   ClientWidth = 269
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,17 +18,18 @@ object AboutForm: TAboutForm
   OnKeyDown = FormKeyDown
   DesignSize = (
     269
-    226)
+    210)
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
     Left = 8
     Top = 8
     Width = 253
-    Height = 148
+    Height = 132
     ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
+    ExplicitHeight = 148
     object TabSheet1: TTabSheet
       Caption = 'About'
       ExplicitHeight = 105
@@ -342,7 +343,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 0.2 Build: 605'
+        Caption = 'TFlickrDownloader 0.3 Build: 624'
         ExplicitWidth = 621
       end
       object Label4: TLabel
@@ -441,42 +442,46 @@ object AboutForm: TAboutForm
   end
   object Button1: TButton
     Left = 151
-    Top = 193
+    Top = 177
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'OK'
     TabOrder = 1
     OnClick = Button1Click
+    ExplicitTop = 193
   end
   object Button2: TButton
     Left = 8
-    Top = 162
+    Top = 146
     Width = 110
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Sourceforge Page'
     TabOrder = 2
     OnClick = Button2Click
+    ExplicitTop = 162
   end
   object Button3: TButton
     Left = 8
-    Top = 193
+    Top = 177
     Width = 110
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Donate'
     TabOrder = 3
     OnClick = Button3Click
+    ExplicitTop = 193
   end
   object Button4: TButton
     Left = 151
-    Top = 162
+    Top = 146
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Codeplex Page'
     TabOrder = 4
     OnClick = Button4Click
+    ExplicitTop = 162
   end
 end

@@ -76,11 +76,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_MinorVer>2</VerInfo_MinorVer>
+        <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.2.0.605;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
-        <VerInfo_Build>605</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.3.0.624;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
+        <VerInfo_Build>624</VerInfo_Build>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
         <DCC_DebugInformation>true</DCC_DebugInformation>
@@ -89,7 +89,6 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
@@ -98,10 +97,10 @@
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_MapFile>3</DCC_MapFile>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.3.0.616;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.3.0.624;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Build>616</VerInfo_Build>
+        <VerInfo_Build>624</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

@@ -219,7 +219,7 @@ type
   end;
 
 const
-  BuildInt = 605;
+  BuildInt = 624;
 
 var
   MainForm: TMainForm;
@@ -971,7 +971,7 @@ begin
             Application.ProcessMessages;
 
             LFileExt := LowerCase(ExtractFileExt(SR.Name));
-            if LFileExt = '.jpg' then
+            if (LFileExt = '.jpg') or (LFileExt = '.jpeg') or (LFileExt = '.png') or (LFileExt = '.bmp') or (LFileExt = '.gif') then
             begin
               ListItem := DownloadedImageList.Items.Add;
               ListItem.Caption := SR.Name;

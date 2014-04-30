@@ -1,4 +1,8 @@
+--0.4
+-Fixed: .jpeg, .png, .bmp and .gif files weren't listed in the image list
+
 --0.3
+-Renamed: Program to TFlickrDownloader
 -Added: Project files now can be drag&dropped to program window
 -Added: Shortcuts to most of the menu items
 -Added: Pressing "ESC" button will close all windows
