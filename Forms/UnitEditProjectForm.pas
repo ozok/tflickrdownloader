@@ -80,8 +80,7 @@ begin
   MainForm.BringToFront;
 end;
 
-procedure TEditProjectForm.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TEditProjectForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     CancelBtnClick(Self);

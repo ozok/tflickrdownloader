@@ -97,8 +97,7 @@ begin
   end;
 end;
 
-procedure TSettingsForm.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TSettingsForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     Self.Close;
@@ -129,7 +128,7 @@ begin
   begin
     Application.MessageBox('Please enter a valid thread count value!', 'Warning', MB_ICONWARNING);
   end;
-  self.Close;
+  Self.Close;
 end;
 
 procedure TSettingsForm.SaveSettings;

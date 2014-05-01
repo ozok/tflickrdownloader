@@ -32,7 +32,8 @@ uses
   CCR.Exif.StreamHelper in 'CCR\CCR.Exif.StreamHelper.pas',
   CCR.Exif.TagIDs in 'CCR\CCR.Exif.TagIDs.pas',
   CCR.Exif.TiffUtils in 'CCR\CCR.Exif.TiffUtils.pas',
-  CCR.Exif.XMPUtils in 'CCR\CCR.Exif.XMPUtils.pas';
+  CCR.Exif.XMPUtils in 'CCR\CCR.Exif.XMPUtils.pas',
+  ImgSize in 'Units\ImgSize.pas';
 
 {$R *.res}
 

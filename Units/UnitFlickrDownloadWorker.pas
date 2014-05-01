@@ -348,6 +348,8 @@ begin
                                     end;
                                   finally
                                     LEWState := LEW.ErrorMessage;
+                                    // update total file size
+                                    Inc(FTotalFileSize, LEW.FileSize div 1024);
                                     LEW.Free;
                                   end;
                                 end;
@@ -406,6 +408,11 @@ begin
                       begin
                         FProgressItem.SubItems[1] := '[' + FloatToStr(FThreadID + 1) + '] Failed to extract link';
                         FProgressItem.StateIndex := 1;
+
+                        Inc(FFailedDownload);
+                        LFailedItem.Link := LFILE.PhotoLink;
+                        LFailedItem.ErrorMessage := emUnableToExtractLink;
+                        FFailedList.Add(LFailedItem);
                       end;
                     finally
                       LFILE.Stop;

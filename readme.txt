@@ -4,9 +4,9 @@ A tool to download photostreams, albums and sets from flickr. Download several p
 # Binaries
 You can get setups from two different locations:
 
-[sourceforge](https://sourceforge.net/projects/tphotodownloader/)
+[https://sourceforge.net/projects/tphotodownloader/](sourceforge)
 
-[codeplex](https://tflickrdownloader.codeplex.com/)
+[https://tflickrdownloader.codeplex.com/](codeplex)
 
 # Licence
 Copyright (C) ozok <ozok26@gmail.com>

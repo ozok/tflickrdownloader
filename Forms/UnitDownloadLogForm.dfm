@@ -3,7 +3,7 @@ object DownloadLogForm: TDownloadLogForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Log'
-  ClientHeight = 314
+  ClientHeight = 378
   ClientWidth = 645
   Color = clBtnFace
   DoubleBuffered = True
@@ -21,12 +21,13 @@ object DownloadLogForm: TDownloadLogForm
   TextHeight = 13
   object ProgressInfoLabel: TsLabel
     Left = 0
-    Top = 301
+    Top = 338
     Width = 645
-    Height = 13
+    Height = 40
     Align = alBottom
+    AutoSize = False
     Caption = 'ProgressInfoLabel'
-    ExplicitWidth = 87
+    ExplicitTop = 365
   end
   object Label1: TsLabel
     Left = 0
@@ -34,6 +35,7 @@ object DownloadLogForm: TDownloadLogForm
     Width = 645
     Height = 13
     Align = alTop
+    AutoSize = False
     Caption = 
       'Download of following has failed (double click to try to open in' +
       ' default browser):'
@@ -43,7 +45,7 @@ object DownloadLogForm: TDownloadLogForm
     Left = 0
     Top = 13
     Width = 645
-    Height = 288
+    Height = 325
     Align = alClient
     Columns = <
       item
@@ -67,6 +69,7 @@ object DownloadLogForm: TDownloadLogForm
       end
       item
       end>
+    ExplicitHeight = 352
   end
   object DownloadProgressImages: TsAlphaImageList
     Height = 22

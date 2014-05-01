@@ -37,7 +37,7 @@ type
   TExifWriterResult = (exOK = 0, exNoImgFile = 1, exFailedToOpen = 3);
 
 type
-  TErrorMessages = (emOK = 0, emAlreadyDownloaded = 1, emEmptyFile = 2, emNotDownloaded = 3, emConnectionTimedOut = 4, emNotStarted = 5);
+  TErrorMessages = (emOK = 0, emAlreadyDownloaded = 1, emEmptyFile = 2, emNotDownloaded = 3, emConnectionTimedOut = 4, emNotStarted = 5, emUnableToExtractLink = 6);
 
 type
   TFailedItem = packed record

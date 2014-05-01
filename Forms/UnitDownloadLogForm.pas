@@ -58,8 +58,7 @@ begin
   MainForm.BringToFront;
 end;
 
-procedure TDownloadLogForm.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TDownloadLogForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     Self.Close;

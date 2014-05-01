@@ -212,6 +212,21 @@ object MainForm: TMainForm
           item
             Caption = 'Image File'
             Width = 400
+          end
+          item
+            Alignment = taCenter
+            Caption = 'Type'
+            Width = 80
+          end
+          item
+            Alignment = taCenter
+            Caption = 'Dimensions'
+            Width = 80
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Size'
+            Width = 80
           end>
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 2302755
@@ -293,7 +308,7 @@ object MainForm: TMainForm
         Width = 676
         Height = 69
         Align = alTop
-        Caption = 'Total progress:'
+        Caption = 'Total progress'
         TabOrder = 1
         SkinData.SkinSection = 'GROUPBOX'
         DesignSize = (
@@ -768,7 +783,6 @@ object MainForm: TMainForm
             Height = 12
             Align = alBottom
             CalcPercents = False
-            BorderStyle = bsNone
             Animated = False
             SkinData.SkinSection = 'GAUGE'
             BackColor = clBtnFace
@@ -785,11 +799,10 @@ object MainForm: TMainForm
             Height = 12
             Align = alBottom
             CalcPercents = False
-            BorderStyle = bsNone
             Animated = False
             SkinData.SkinSection = 'GAUGE'
             BackColor = clBtnFace
-            ForeColor = clBlack
+            ForeColor = clGray
             Progress = 0
             ShowText = False
             Suffix = '%'
@@ -802,7 +815,6 @@ object MainForm: TMainForm
             Height = 12
             Align = alBottom
             CalcPercents = False
-            BorderStyle = bsNone
             Animated = False
             SkinData.SkinSection = 'GAUGE'
             BackColor = clBtnFace
@@ -2334,7 +2346,7 @@ object MainForm: TMainForm
   end
   object ProgressTimer: TTimer
     Enabled = False
-    Interval = 333
+    Interval = 500
     OnTimer = ProgressTimerTimer
     Left = 32
     Top = 456

@@ -31,8 +31,8 @@ uses
   JvExComCtrls, JvListView, acPNG, Registry, ShlObj,
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
-  sBitBtn, sGroupBox, sSkinProvider, sEdit, JvLED, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop;
+  sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize;
 
 type
   TDownloadItemInfo = packed record
@@ -177,6 +177,7 @@ type
 
     // total size of downloaded images
     FTotalFileSize: int64;
+    FPrevTotalSize: Int64;
 
     function IntToTime(IntTime: Integer): string;
 
@@ -193,6 +194,8 @@ type
 
     procedure LoadSettings;
     procedure SaveSettings;
+
+    function FileSize(const FilePath: string): Int64;
   public
     { Public declarations }
     ProjectInfo: TProjectInfo;
@@ -282,6 +285,7 @@ begin
   ProjectInfoList.Items.Clear;
   DownloadedImageList.Items.Clear;
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
+  DownloadedImageList.BoundLabel.Caption := 'Downloaded images for this project (0):';
   ProjectFilePath := '';
   ProjectUnLoadedStatus;
 end;
@@ -426,6 +430,19 @@ begin
       Result := 'Not downloaded';
     emConnectionTimedOut:
       Result := 'Connection timed out';
+    emUnableToExtractLink:
+      Result := 'Unable to extract image link';
+  end;
+end;
+
+function TMainForm.FileSize(const FilePath: string): Int64;
+var
+  LInfo: TWin32FileAttributeData;
+begin
+  Result := -1;
+  if GetFileAttributesEx(PWideChar(FilePath), GetFileExInfoStandard, @LInfo) then
+  begin
+    Result := Int64(LInfo.nFileSizeLow) or Int64(LInfo.nFileSizeHigh shl 32);
   end;
 end;
 
@@ -506,7 +523,7 @@ end;
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   ProgressList.Columns[1].Width := ProgressList.ClientWidth - ProgressList.Columns[0].Width - ProgressList.Columns[2].Width - 20;
-  DownloadedImageList.Columns[0].Width := DownloadedImageList.ClientWidth - 20;
+  DownloadedImageList.Columns[0].Width := DownloadedImageList.ClientWidth - 20 - DownloadedImageList.Columns[1].Width - DownloadedImageList.Columns[2].Width - DownloadedImageList.Columns[3].Width;
   sPanel2.Left := StatusBar.Width - sPanel2.Width;
   StatusBar.Panels[1].Width := StatusBar.ClientWidth - StatusBar.Panels[0].Width - StatusBar.Panels[2].Width - sPanel2.Width;
 end;
@@ -778,6 +795,8 @@ var
   // thread current download progress
   LThreadCurProgress: Integer;
   j: Integer;
+  LDownloadedImgCount: Integer;
+  LPrevDownloadedImgCount: Integer;
 begin
 
   LPageProgress := 0;
@@ -789,7 +808,7 @@ begin
   LTotalAlready := 0;
   LTotalFailed := 0;
 
-  // progres value for all threads
+  // progres value all threads' values combined
   for I := 0 to 7 do
   begin
     Application.ProcessMessages;
@@ -807,6 +826,7 @@ begin
   end;
   // total number of images to be downloaded
   FTotalFileSize := 0;
+  FPrevTotalSize := 0;
   for I := 0 to 7 do
   begin
     if Assigned(FDownloadThreads[i]) then
@@ -814,6 +834,12 @@ begin
       Inc(FTotalFileSize, FDownloadThreads[i].TotalSize);
     end;
   end;
+  // update the speed only when downloaded file size changes
+  if FTotalFileSize <> FPrevTotalSize then
+  begin
+    GeneralSpeedEdit.Text := FloatToStr(FTotalFileSize div TimePassed) + ' KB/s';
+  end;
+  FPrevTotalSize := FTotalFileSize;
 
   // total progress
   LPageCount := ProjectInfo.EndPage - ProjectInfo.StartPage + 1;
@@ -895,21 +921,26 @@ begin
         end;
       end;
     end;
+    // update image list
+    LPrevDownloadedImgCount := DownloadedImageList.Items.Count;
+    RefreshDownloadedImageListClick(self);
+    LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+
     // if some downloads failed,
     // show them to user.
     if LFailedAtEnd > 0 then
     begin
-      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed);
+      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
+        sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
       self.Enabled := False;
       DownloadLogForm.Show;
     end
     else
     begin
-      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.'), 'Finished', MB_ICONINFORMATION);
+      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
+        'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
     end;
 
-    // update image list
-    RefreshDownloadedImageListClick(self);
   end;
 
 end;
@@ -942,6 +973,7 @@ var
   SR: TSearchRec;
   LFileExt: string;
   ListItem: TListItem;
+  LWidth, LHeight: Word;
 begin
   if Length(ProjectFilePath) < 1 then
   begin
@@ -975,6 +1007,25 @@ begin
             begin
               ListItem := DownloadedImageList.Items.Add;
               ListItem.Caption := SR.Name;
+              ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt)));// dimensions
+              if (LFileExt = '.jpg') or (LFileExt = '.jpeg') then
+              begin
+                ImgSize.GetJPGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+              end
+              else if LFileExt = '.png' then
+              begin
+                ImgSize.GetPNGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+              end
+              else if LFileExt = '.gif' then
+              begin
+                ImgSize.GetGIFSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+              end
+              else if LFileExt = '.bmp' then
+              begin
+                ImgSize.GetBMPSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+              end;
+              ListItem.SubItems.Add(FloatToStr(LWidth) + 'x' + FloatToStr(LHeight));
+              ListItem.SubItems.Add(FloatToStr(FileSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name) div 1024) + ' KB');
               ListItem.StateIndex := 0;
             end;
           until FindNext(SR) <> 0;
@@ -1104,6 +1155,7 @@ begin
   LPageCount := 0;
   TimePassed := 0;
   FTotalFileSize := 0;
+  FPrevTotalSize := 0;
   DeleteTempFiles;
   SetProgressState(Handle, tbpsNormal);
   SetProgressValue(Handle, 0, 1000);
@@ -1218,6 +1270,7 @@ var
   LFailedAtEnd: integer;
   j: integer;
   LLogItem: TListItem;
+  LPrevDownloadedImgCount, LDownloadedImgCount: Integer;
 begin
 
   if ID_NO = Application.MessageBox('Do you want to stop downloading?', 'Stop', MB_ICONQUESTION or MB_YESNO) then
@@ -1242,11 +1295,6 @@ begin
       begin
         ThreadEndProgressBar.Position := i + 1;
         FDownloadThreads[i].Stop;
-        // while FDownloadThreads[i].DownloaderStatus = dsDownloading do
-        // begin
-        // Application.ProcessMessages;
-        // Sleep(10);
-        // end;
       end;
     end;
   finally
@@ -1274,19 +1322,25 @@ begin
       end;
     end;
   end;
+  // update image list
+  LPrevDownloadedImgCount := DownloadedImageList.Items.Count;
+  RefreshDownloadedImageListClick(self);
+  LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+
+  // if some downloads failed,
+  // show them to user.
   if LFailedAtEnd > 0 then
   begin
-    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed);
+    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
+      sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
     self.Enabled := False;
     DownloadLogForm.Show;
   end
   else
   begin
-    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.'), 'Finished', MB_ICONINFORMATION);
+    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
+      'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
   end;
-
-  // update image list
-  RefreshDownloadedImageListClick(self);
   for I := 0 to 7 do
     SetLedState(False, i);
 end;
@@ -1326,8 +1380,6 @@ procedure TMainForm.TimeTimerTimer(Sender: TObject);
 begin
   inc(TimePassed);
   StatusBar.Panels[2].Text := IntToTime(TimePassed);
-
-  GeneralSpeedEdit.Text := FloatToStr(FTotalFileSize div TimePassed) + ' KB/s';
 end;
 
 procedure TMainForm.UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);

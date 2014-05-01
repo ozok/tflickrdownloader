@@ -431,7 +431,7 @@ begin
   if PosEx('+', Str) > 0 then
   begin
     ltmp := Str;
-    delete(ltmp, PosEx('+', Str)-1, MaxInt);
+    Delete(ltmp, PosEx('+', Str) - 1, MAXINT);
     Result := ltmp;
   end;
 end;
@@ -490,7 +490,7 @@ end;
 procedure TExifWriter.WriteExifData;
 var
   LExifWriter: TExifData;
-//  ls: TStreamWriter;
+  // ls: TStreamWriter;
   ldate: TDateTimeTagValue;
   LAperture: TExifFraction;
   LFocalLength: TExifFraction;
@@ -498,17 +498,17 @@ begin
 
   FErrorMsg := exOK;
   LExifWriter := TExifData.Create();
-//  ls := TStreamWriter.Create('C:\exif.txt');
+  // ls := TStreamWriter.Create('C:\exif.txt');
   try
     // start writing
     if LExifWriter.LoadFromGraphic(FImgPath) then
     begin
       LExifWriter.CameraMake := FExifData.Camera;
       LExifWriter.CameraModel := FExifData.Camera;
-//      ls.WriteLine(FExifData.Camera);
+      // ls.WriteLine(FExifData.Camera);
       LExifWriter.Copyright := FExifData.CopyrightFlag;
       ldate := TDateTimeTagValue.CreateFromString(StringReplace(FExifData.DateandTimeOriginal, ':', '.', [rfReplaceAll]));
-//      ls.WriteLine(StringReplace(FExifData.DateandTimeOriginal, ':', '.', [rfReplaceAll]));
+      // ls.WriteLine(StringReplace(FExifData.DateandTimeOriginal, ':', '.', [rfReplaceAll]));
       LExifWriter.DateTimeOriginal := ldate;
       ldate := TDateTimeTagValue.CreateFromString(FExifData.DateandTimeModified);
       LExifWriter.DateTime := ldate;
@@ -537,8 +537,8 @@ begin
     LExifWriter.SaveToGraphic(FImgPath);
     LExifWriter.Free;
 
-//    ls.Close;
-//    ls.Free;
+    // ls.Close;
+    // ls.Free;
   end;
 
 end;

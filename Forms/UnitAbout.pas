@@ -85,8 +85,7 @@ begin
   ShellExecute(0, 'open', 'https://tflickrdownloader.codeplex.com/', nil, nil, SW_SHOWNORMAL);
 end;
 
-procedure TAboutForm.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TAboutForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
     Self.Close;

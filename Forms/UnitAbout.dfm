@@ -32,6 +32,9 @@ object AboutForm: TAboutForm
     ExplicitHeight = 148
     object TabSheet1: TTabSheet
       Caption = 'About'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 105
       object Image1: TImage
         Left = 0
@@ -372,6 +375,9 @@ object AboutForm: TAboutForm
     object TabSheet2: TTabSheet
       Caption = '3rd Party'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 109
       object Label1: TLabel
         Left = 0
@@ -433,10 +439,9 @@ object AboutForm: TAboutForm
       object Label3: TLabel
         Left = 0
         Top = 0
-        Width = 245
+        Width = 3
         Height = 13
         Align = alTop
-        ExplicitWidth = 3
       end
     end
   end
