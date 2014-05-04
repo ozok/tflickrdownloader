@@ -222,7 +222,7 @@ type
   end;
 
 const
-  BuildInt = 624;
+  BuildInt = 639;
 
 var
   MainForm: TMainForm;

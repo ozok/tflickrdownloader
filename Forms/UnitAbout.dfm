@@ -29,13 +29,8 @@ object AboutForm: TAboutForm
     ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    ExplicitHeight = 148
     object TabSheet1: TTabSheet
       Caption = 'About'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 105
       object Image1: TImage
         Left = 0
         Top = 0
@@ -346,7 +341,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 0.3 Build: 624'
+        Caption = 'TFlickrDownloader 0.4 Build: 639'
         ExplicitWidth = 621
       end
       object Label4: TLabel
@@ -375,10 +370,6 @@ object AboutForm: TAboutForm
     object TabSheet2: TTabSheet
       Caption = '3rd Party'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 109
       object Label1: TLabel
         Left = 0
         Top = 13
@@ -439,9 +430,10 @@ object AboutForm: TAboutForm
       object Label3: TLabel
         Left = 0
         Top = 0
-        Width = 3
+        Width = 245
         Height = 13
         Align = alTop
+        ExplicitWidth = 3
       end
     end
   end
@@ -454,7 +446,6 @@ object AboutForm: TAboutForm
     Caption = 'OK'
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 193
   end
   object Button2: TButton
     Left = 8
@@ -465,7 +456,6 @@ object AboutForm: TAboutForm
     Caption = 'Sourceforge Page'
     TabOrder = 2
     OnClick = Button2Click
-    ExplicitTop = 162
   end
   object Button3: TButton
     Left = 8
@@ -476,7 +466,6 @@ object AboutForm: TAboutForm
     Caption = 'Donate'
     TabOrder = 3
     OnClick = Button3Click
-    ExplicitTop = 193
   end
   object Button4: TButton
     Left = 151
@@ -487,6 +476,5 @@ object AboutForm: TAboutForm
     Caption = 'Codeplex Page'
     TabOrder = 4
     OnClick = Button4Click
-    ExplicitTop = 162
   end
 end

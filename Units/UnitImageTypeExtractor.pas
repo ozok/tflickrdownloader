@@ -41,7 +41,6 @@ implementation
 
 const
   // taken from http://www.delphipages.com/forum/showthread.php?t=174008
-  // todo: check if they are correct
   JPG_HEADER: array [0 .. 2] of byte = ($FF, $D8, $FF);
   GIF_HEADER: array [0 .. 2] of byte = ($47, $49, $46);
   BMP_HEADER: array [0 .. 1] of byte = ($42, $4D);
