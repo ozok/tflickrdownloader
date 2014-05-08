@@ -32,7 +32,7 @@ uses
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize;
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils;
 
 type
   TDownloadItemInfo = packed record
@@ -222,7 +222,7 @@ type
   end;
 
 const
-  BuildInt = 639;
+  BuildInt = 645;
 
 var
   MainForm: TMainForm;
@@ -677,7 +677,7 @@ begin
         outProjectInfo.EndPage := StrToInt(LProjectfile[2]);
         outProjectInfo.ImageTypeOption := StrToInt(LProjectfile[3]);
         outProjectInfo.OutputFolder := LProjectfile[4];
-        outProjectInfo.PageLink := LProjectfile[5];
+        outProjectInfo.PageLink := StringReplace(LProjectfile[5], 'https://', 'http://', [rfIgnoreCase]);
 
         // project summary
         ProjectInfoList.Items.Clear;
@@ -1007,7 +1007,7 @@ begin
             begin
               ListItem := DownloadedImageList.Items.Add;
               ListItem.Caption := SR.Name;
-              ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt)));// dimensions
+              ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt))); // dimensions
               if (LFileExt = '.jpg') or (LFileExt = '.jpeg') then
               begin
                 ImgSize.GetJPGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);

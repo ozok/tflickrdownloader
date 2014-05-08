@@ -69,7 +69,6 @@ object DownloadLogForm: TDownloadLogForm
       end
       item
       end>
-    ExplicitHeight = 352
   end
   object DownloadProgressImages: TsAlphaImageList
     Height = 22

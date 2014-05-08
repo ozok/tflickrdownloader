@@ -181,7 +181,7 @@ object EditProjectForm: TEditProjectForm
     Top = 89
     Width = 185
     Height = 21
-    Caption = 'Get photostream page count'
+    Caption = 'Get page count'
     TabOrder = 5
     OnClick = GetPageCountBtnClick
     SkinData.SkinSection = 'BUTTON'

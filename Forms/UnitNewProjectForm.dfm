@@ -151,11 +151,11 @@ object NewProjectForm: TNewProjectForm
     TabOrder = 0
   end
   object GetPageCountBtn: TsButton
-    Left = 321
+    Left = 300
     Top = 89
-    Width = 185
+    Width = 206
     Height = 21
-    Caption = 'Get photostream page count'
+    Caption = 'Get page count'
     TabOrder = 5
     OnClick = GetPageCountBtnClick
     SkinData.SkinSection = 'BUTTON'

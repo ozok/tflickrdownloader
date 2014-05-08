@@ -1,10 +1,13 @@
+--0.4.1
+-Fixed: Download from pages starting with "https://" would fail
+
 --0.4
 -Added: Download speed will be more consistent and accurate
 -Added: Program will show a bit more detailed information after download is done/stopped
 -Added: Image dimensions, type and size will be shown in the file list
 -Added: A few minor UI changes
 -Fixed: .jpeg, .png, .bmp and .gif files weren't listed in the image list
--Fixed: Closing a project didn't reset download image count text
+-Fixed: Closing a project didn't reset downloaded image count text
 
 --0.3
 -Renamed: Program to TFlickrDownloader

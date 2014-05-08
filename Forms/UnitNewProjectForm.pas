@@ -106,6 +106,9 @@ begin
     sPanel1.BringToFront;
     Self.Enabled := False;
     try
+      // remove https
+      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
+
       LPCE := TPhotoStreamPageCountExtractor.Create(PageLinkEdit.Text, MainForm.TempFolder + '\pagecount.txt');
       try
         LPCE.Start();
@@ -169,6 +172,8 @@ begin
           Exit;
         end;
       end;
+      // remove https
+      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
 
       if (Length(StartPageEdit.Text) > 0) and (Length(EndPageEdit.Text) > 0) then
       begin
