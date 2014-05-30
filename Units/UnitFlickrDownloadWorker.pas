@@ -155,7 +155,7 @@ var
   LPD: TPhotoDownloader;
   LImagePageLinksFile: TStreamReader;
   LImagePageStr: string;
-  LImageDownloadProgress: integer;
+//  LImageDownloadProgress: integer;
   // LProgressSoFar: integer;
   LPageIndex: string;
   LImagesDownloaded: integer;
@@ -193,7 +193,7 @@ begin
     end;
 
     // reset image progress
-    LImageDownloadProgress := 0;
+//    LImageDownloadProgress := 0;
 
     FStatusText := 'Downloading the main page [Page: ' + LPageIndex + ']';
     if ContainsText(FProjectInfo.PageLink, '/groups/') then
@@ -257,7 +257,7 @@ begin
                     Break;
                   end;
 
-                  Inc(LImageDownloadProgress);
+//                  Inc(LImageDownloadProgress);
 
                   // read line as a link
                   LImagePageStr := Trim(LImagePageLinksFile.ReadLine);
@@ -325,6 +325,7 @@ begin
                           Inc(FTotalFileSize, LPD.ImgSize div 1024);
 
                           // update progress item's info
+{$REGION 'Item info block'}
                           case LPD.ErrorMessage of
                             emOK:
                               begin
@@ -399,6 +400,7 @@ begin
                                 FFailedList.Add(LFailedItem);
                               end;
                           end;
+{$ENDREGION}
                           LPD.Stop;
                           FreeAndNil(LPD);
                         end;
@@ -410,7 +412,14 @@ begin
                         FProgressItem.StateIndex := 1;
 
                         Inc(FFailedDownload);
-                        LFailedItem.Link := LFILE.PhotoLink;
+                        if Length(LFILE.PhotoLink) > 0 then
+                        begin
+                          LFailedItem.Link := LFILE.PhotoLink;
+                        end
+                        else
+                        begin
+                          LFailedItem.Link := LImagePageStr;
+                        end;
                         LFailedItem.ErrorMessage := emUnableToExtractLink;
                         FFailedList.Add(LFailedItem);
                       end;

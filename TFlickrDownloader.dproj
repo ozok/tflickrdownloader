@@ -8,7 +8,7 @@
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
         <ProjectVersion>14.6</ProjectVersion>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -75,13 +75,13 @@
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.4.1.645;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
-        <VerInfo_Build>645</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.4.2.672;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
+        <VerInfo_Build>672</VerInfo_Build>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
         <DCC_DebugInformation>true</DCC_DebugInformation>
@@ -90,7 +90,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
@@ -99,10 +99,10 @@
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_MapFile>3</DCC_MapFile>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.4.1.645;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.4.2.672;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Build>645</VerInfo_Build>
+        <VerInfo_Build>672</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -206,11 +206,9 @@
                     <VersionInfoKeys Name="Comments"/>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\ozok\Downloads\Mida Converter from VCL to Firemonkey XE4\Mida Converter from VCL to Firemonkey XE4\MidaBasicDesign180.bpl">Mida Converter</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\11.0\Bpl\ImageMagick.bpl">(untitled)</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\ozok\Downloads\Mida Converter from VCL to Firemonkey XE4\Mida Converter from VCL to Firemonkey XE4\MidaBasicDesign180.bpl">File C:\Users\ozok\Downloads\Mida Converter from VCL to Firemonkey XE4\Mida Converter from VCL to Firemonkey XE4\MidaBasicDesign180.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k180.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp180.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\11.0\Bpl\Package1.bpl">(untitled)</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

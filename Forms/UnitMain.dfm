@@ -135,7 +135,7 @@ object MainForm: TMainForm
     Top = 58
     Width = 684
     Height = 483
-    ActivePage = sTabSheet1
+    ActivePage = sTabSheet2
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 1

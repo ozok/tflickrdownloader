@@ -1,3 +1,7 @@
+--0.4.2
+-Added: A better handling if a link is empty
+-Fixed: A few small interface problems
+
 --0.4.1
 -Fixed: Download from pages starting with "https://" would fail
 

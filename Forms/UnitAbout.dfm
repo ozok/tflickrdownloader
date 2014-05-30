@@ -341,7 +341,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 0.4.1 Build: 645'
+        Caption = 'TFlickrDownloader 0.4.2 Build: 672'
         ExplicitWidth = 621
       end
       object Label4: TLabel

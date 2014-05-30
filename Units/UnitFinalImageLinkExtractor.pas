@@ -145,6 +145,7 @@ begin
       end;
     end;
   finally
+    FPhotoLink := Trim(FPhotoLink);
     FStatus := esDone;
   end;
 

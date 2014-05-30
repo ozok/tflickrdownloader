@@ -222,7 +222,7 @@ type
   end;
 
 const
-  BuildInt = 645;
+  BuildInt = 672;
 
 var
   MainForm: TMainForm;
@@ -567,6 +567,10 @@ begin
     begin
       SettingsForm.ThreadNumberEdit.MaxValue := 8;
     end
+    else
+    begin
+      SettingsForm.ThreadNumberEdit.MaxValue := CPUCount;
+    end;
   end;
 
   // check update
@@ -718,7 +722,6 @@ end;
 
 procedure TMainForm.NewProjectBtnClick(Sender: TObject);
 begin
-  // todo: close previous project
   self.Enabled := False;
   NewProjectForm.Show;
 end;
@@ -875,7 +878,7 @@ begin
     LThreadCurProgress := FDownloadThreads[DownloadThreadsList.ItemIndex].CurrenProgress;
     LThreadProgress := FDownloadThreads[DownloadThreadsList.ItemIndex].ThreadProgress;
     TotalProgressBar.Progress := LTotalProgress;
-    PageProgressBar.Progress := LThreadProgresses;
+    PageProgressBar.Progress := LThreadProgress;
     CurrentProgressBar.Progress := LThreadCurProgress;
   end
   else
@@ -915,9 +918,19 @@ begin
         for j := 0 to FDownloadThreads[i].FailedItems.Count - 1 do
         begin
           LLogItem := DownloadLogForm.LogList.Items.Add;
-          LLogItem.Caption := FDownloadThreads[i].FailedItems[j].Link;
-          LLogItem.SubItems.Add('[' + FloatToStr(i + 1) + '] ' + ErrorMessageToStr(FDownloadThreads[i].FailedItems[j].ErrorMessage));
-          LLogItem.StateIndex := ErrorMessageToInt(FDownloadThreads[i].FailedItems[j].ErrorMessage);
+          // something against empty links
+          if Length(FDownloadThreads[i].FailedItems[j].Link) > 0 then
+          begin
+            LLogItem.Caption := FDownloadThreads[i].FailedItems[j].Link;
+            LLogItem.SubItems.Add('[' + FloatToStr(i + 1) + '] ' + ErrorMessageToStr(FDownloadThreads[i].FailedItems[j].ErrorMessage));
+            LLogItem.StateIndex := ErrorMessageToInt(FDownloadThreads[i].FailedItems[j].ErrorMessage);
+          end
+          else
+          begin
+            LLogItem.Caption := 'Empty link';
+            LLogItem.SubItems.Add('[' + FloatToStr(i + 1) + '] Link is somehow empty.');
+            LLogItem.StateIndex := 1;
+          end;
         end;
       end;
     end;
@@ -1165,7 +1178,7 @@ begin
   begin
     StartStatus;
 
-    self.Caption := '[0%] TPhotoDownloader - ' + ProjectInfo.Name;
+    self.Caption := '[0% 0% 0%] TPhotoDownloader - ' + ProjectInfo.Name;
     TimeTimer.Enabled := True;
 
     // calculate number of threads to run
