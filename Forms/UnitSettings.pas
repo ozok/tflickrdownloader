@@ -87,14 +87,7 @@ end;
 procedure TSettingsForm.FormCreate(Sender: TObject);
 begin
   LoadSettings;
-  if CPUCount > 8 then
-  begin
-    ThreadNumberEdit.MaxValue := 8;
-  end
-  else
-  begin
-    ThreadNumberEdit.MaxValue := CPUCount;
-  end;
+  ThreadNumberEdit.MaxValue := 16;
 end;
 
 procedure TSettingsForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

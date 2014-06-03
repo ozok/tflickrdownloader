@@ -155,7 +155,7 @@ var
   LPD: TPhotoDownloader;
   LImagePageLinksFile: TStreamReader;
   LImagePageStr: string;
-//  LImageDownloadProgress: integer;
+  // LImageDownloadProgress: integer;
   // LProgressSoFar: integer;
   LPageIndex: string;
   LImagesDownloaded: integer;
@@ -193,7 +193,7 @@ begin
     end;
 
     // reset image progress
-//    LImageDownloadProgress := 0;
+    // LImageDownloadProgress := 0;
 
     FStatusText := 'Downloading the main page [Page: ' + LPageIndex + ']';
     if ContainsText(FProjectInfo.PageLink, '/groups/') then
@@ -257,7 +257,7 @@ begin
                     Break;
                   end;
 
-//                  Inc(LImageDownloadProgress);
+                  // Inc(LImageDownloadProgress);
 
                   // read line as a link
                   LImagePageStr := Trim(LImagePageLinksFile.ReadLine);

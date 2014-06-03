@@ -41,9 +41,9 @@ object MainForm: TMainForm
       684
       21)
     object sPanel2: TsGroupBox
-      Left = 548
+      Left = 412
       Top = 2
-      Width = 136
+      Width = 272
       Height = 17
       Anchors = [akRight, akBottom]
       TabOrder = 0
@@ -120,6 +120,86 @@ object MainForm: TMainForm
       end
       object LED8: TsImage
         Left = 119
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED9: TsImage
+        Left = 136
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED10: TsImage
+        Left = 153
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED12: TsImage
+        Left = 187
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED15: TsImage
+        Left = 238
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED11: TsImage
+        Left = 170
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED14: TsImage
+        Left = 221
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED16: TsImage
+        Left = 255
+        Top = 0
+        Width = 17
+        Height = 17
+        Picture.Data = {07544269746D617000000000}
+        ImageIndex = 1
+        Images = Icons
+        SkinData.SkinSection = 'CHECKBOX'
+      end
+      object LED13: TsImage
+        Left = 204
         Top = 0
         Width = 17
         Height = 17

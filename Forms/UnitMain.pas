@@ -135,6 +135,14 @@ type
     UpdateThread: TJvThread;
     UpdateDownloader: TJvHttpUrlGrabber;
     DragDrop: TJvDragDrop;
+    LED9: TsImage;
+    LED10: TsImage;
+    LED12: TsImage;
+    LED15: TsImage;
+    LED11: TsImage;
+    LED14: TsImage;
+    LED16: TsImage;
+    LED13: TsImage;
     procedure FormCreate(Sender: TObject);
     procedure NewProjectBtnClick(Sender: TObject);
     procedure StartBtnClick(Sender: TObject);
@@ -173,7 +181,7 @@ type
     TimePassed: integer;
 
     // download threads
-    FDownloadThreads: array [0 .. 7] of TDownloadWorker;
+    FDownloadThreads: array [0 .. 15] of TDownloadWorker;
 
     // total size of downloaded images
     FTotalFileSize: int64;
@@ -200,7 +208,7 @@ type
     { Public declarations }
     ProjectInfo: TProjectInfo;
 
-    Leds: array [0 .. 7] of TsImage;
+    Leds: array [0 .. 15] of TsImage;
 
     ProjectFilePath: string;
 
@@ -223,6 +231,7 @@ type
 
 const
   BuildInt = 672;
+  Portable = False;
 
 var
   MainForm: TMainForm;
@@ -465,8 +474,16 @@ begin
   Leds[5] := LED6;
   Leds[6] := LED7;
   Leds[7] := LED8;
+  Leds[8] := LED9;
+  Leds[9] := LED10;
+  Leds[10] := LED11;
+  Leds[11] := LED12;
+  Leds[12] := LED13;
+  Leds[13] := LED14;
+  Leds[14] := LED15;
+  Leds[15] := LED16;
   // reset leds
-  for I := 0 to 7 do
+  for I := Low(Leds) to High(Leds) do
   begin
     SetLedState(False, i);
   end;
@@ -488,7 +505,15 @@ begin
   // AssignLabelToProgressBar(CurrentProgressLabel, CurrentProgressBar);
   // AssignLabelToProgressBar(CurrentPageProgressLabel, CurrentPageProgressBar);
 
-  AppDataFolder := SysInfo.Folders.AppData + '\TPD';
+  // if portable then save ini file to program folder
+  if not Portable then
+  begin
+    AppDataFolder := SysInfo.Folders.AppData + '\TPD';
+  end
+  else
+  begin
+    AppDataFolder := ExtractFileDir(Application.ExeName)
+  end;
   if not DirectoryExists(AppDataFolder) then
   begin
     if not CreateDir(AppDataFolder) then
@@ -497,6 +522,7 @@ begin
       Application.Terminate;
     end;
   end;
+  // temp folder is the same for portable and installed
   TempFolder := SysInfo.Folders.Temp + '\TPD';
   if not DirectoryExists(TempFolder) then
   begin
@@ -530,7 +556,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  //
+  // open a project file with the program
   if ParamCount = 1 then
   begin
     if FileExists(ParamStr(1)) then
@@ -559,19 +585,6 @@ begin
   PageProgressBar.Progress := 0;
   CurrentProgressBar.Progress := 0;
   LoadSettings;
-
-  // register .fpd with this program
-  if ParamCount = 1 then
-  begin
-    if ParamStr(1) = '/nocpulimit' then
-    begin
-      SettingsForm.ThreadNumberEdit.MaxValue := 8;
-    end
-    else
-    begin
-      SettingsForm.ThreadNumberEdit.MaxValue := CPUCount;
-    end;
-  end;
 
   // check update
   UpdateThread.Execute(nil);
@@ -812,7 +825,7 @@ begin
   LTotalFailed := 0;
 
   // progres value all threads' values combined
-  for I := 0 to 7 do
+  for I := Low(FDownloadThreads) to High(FDownloadThreads) do
   begin
     Application.ProcessMessages;
     if Assigned(FDownloadThreads[i]) then
@@ -830,7 +843,7 @@ begin
   // total number of images to be downloaded
   FTotalFileSize := 0;
   FPrevTotalSize := 0;
-  for I := 0 to 7 do
+  for I := Low(FDownloadThreads) to High(FDownloadThreads) do
   begin
     if Assigned(FDownloadThreads[i]) then
     begin
@@ -910,7 +923,7 @@ begin
 
     // show if there are any failed downloads
     LFailedAtEnd := 0;
-    for i := 0 to 7 do
+    for i := Low(FDownloadThreads) to High(FDownloadThreads) do
     begin
       if Assigned(FDownloadThreads[i]) then
       begin
@@ -1190,7 +1203,7 @@ begin
     end;
 
     // reset leds.
-    for I := 0 to 7 do
+    for I := Low(FDownloadThreads) to High(FDownloadThreads) do
     begin
       SetLedState(False, i);
     end;
@@ -1239,7 +1252,7 @@ begin
     // start running threads
     if LPageCount > 0 then
     begin
-      for I := 0 to 7 do
+      for I := Low(FDownloadThreads) to High(FDownloadThreads) do
       begin
         if Assigned(FDownloadThreads[i]) then
         begin
@@ -1321,7 +1334,7 @@ begin
 
   // show if there are any failed downloads
   LFailedAtEnd := 0;
-  for i := 0 to 7 do
+  for i := Low(FDownloadThreads) to High(FDownloadThreads) do
   begin
     if Assigned(FDownloadThreads[i]) then
     begin
@@ -1354,7 +1367,7 @@ begin
     Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
       'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
   end;
-  for I := 0 to 7 do
+  for I := Low(Leds) to High(Leds) do
     SetLedState(False, i);
 end;
 

@@ -1,3 +1,7 @@
+--0.4.3
+-Added: Parallel download limit is now 16
+-Added: Parallel download limit is not limited to CPU core count now
+
 --0.4.2
 -Added: A better handling if a link is empty
 -Fixed: A few small interface problems
