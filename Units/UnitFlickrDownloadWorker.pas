@@ -66,6 +66,9 @@ type
     procedure ThreadRun(Sender: TIdThreadComponent);
     procedure ThreadStopped(Sender: TIdThreadComponent);
     procedure ThreadTerminate(Sender: TIdThreadComponent);
+
+    procedure SetLedON;
+    procedure SetLedOFF;
   public
     property DownloaderStatus: TDownloadStatus read FDownloaderStatus;
     property PageList: TStringList read FPageList write FPageList;
@@ -291,7 +294,7 @@ begin
                       // update total file size
                       Inc(FTotalFileSize, LFILE.FileSize div 1024);
 
-                      MainForm.SetLedState(True, FThreadID);
+                      FDownloadThread.Synchronize(SetLedON);
                       if Length(LFILE.PhotoLink) > 0 then
                       begin
                         FProgressItem.SubItems[1] := '[' + FloatToStr(FThreadID + 1) + '] Downloading the image';
@@ -408,25 +411,29 @@ begin
                       end
                       else
                       begin
-                        FProgressItem.SubItems[1] := '[' + FloatToStr(FThreadID + 1) + '] Failed to extract link';
-                        FProgressItem.StateIndex := 1;
+                        // report this only if still downloading
+                        if FDownloadingImages then
+                        begin
+                          FProgressItem.SubItems[1] := '[' + FloatToStr(FThreadID + 1) + '] Failed to extract link[2]';
+                          FProgressItem.StateIndex := 1;
 
-                        Inc(FFailedDownload);
-                        if Length(LFILE.PhotoLink) > 0 then
-                        begin
-                          LFailedItem.Link := LFILE.PhotoLink;
-                        end
-                        else
-                        begin
-                          LFailedItem.Link := LImagePageStr;
+                          Inc(FFailedDownload);
+                          if Length(LFILE.PhotoLink) > 0 then
+                          begin
+                            LFailedItem.Link := LFILE.PhotoLink;
+                          end
+                          else
+                          begin
+                            LFailedItem.Link := LImagePageStr;
+                          end;
+                          LFailedItem.ErrorMessage := emUnableToExtractLink;
+                          FFailedList.Add(LFailedItem);
                         end;
-                        LFailedItem.ErrorMessage := emUnableToExtractLink;
-                        FFailedList.Add(LFailedItem);
                       end;
                     finally
                       LFILE.Stop;
                       FreeAndNil(LFILE);
-                      MainForm.SetLedState(False, FThreadID);
+                      FDownloadThread.Synchronize(SetLedOFF);
                     end;
 
                   end;
@@ -463,6 +470,16 @@ begin
     FStatusText := 'Project page link is too short. Please re-create this project.';
   end;
   inc(FPageProgress);
+end;
+
+procedure TDownloadWorker.SetLedOFF;
+begin
+  MainForm.SetLedState(False, FThreadID)
+end;
+
+procedure TDownloadWorker.SetLedON;
+begin
+  MainForm.SetLedState(True, FThreadID)
 end;
 
 procedure TDownloadWorker.Start;

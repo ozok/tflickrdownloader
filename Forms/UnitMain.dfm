@@ -27,7 +27,7 @@ object MainForm: TMainForm
     Height = 21
     Panels = <
       item
-        Text = 'TFlickrDownloader 0.4.1.645'
+        Text = 'TFlickrDownloader 0.4.3.X'
         Width = 190
       end
       item

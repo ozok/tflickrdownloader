@@ -17,7 +17,7 @@
   * along with TFlickrDownloader.  If not, see <http://www.gnu.org/licenses/>.
   *
   * }
-
+  // todo: update statusbar text
 unit UnitMain;
 
 interface
@@ -853,7 +853,18 @@ begin
   // update the speed only when downloaded file size changes
   if FTotalFileSize <> FPrevTotalSize then
   begin
-    GeneralSpeedEdit.Text := FloatToStr(FTotalFileSize div TimePassed) + ' KB/s';
+    if TimePassed > 0 then
+    begin
+      GeneralSpeedEdit.Text := FloatToStr(FTotalFileSize div TimePassed) + ' KB/s';
+    end
+    else
+    begin
+      GeneralSpeedEdit.Text := '0 KB/s';
+    end;
+  end
+  else
+  begin
+    GeneralSpeedEdit.Text := '0 KB/s';
   end;
   FPrevTotalSize := FTotalFileSize;
 
@@ -952,6 +963,10 @@ begin
     RefreshDownloadedImageListClick(self);
     LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
 
+    if TimePassed < 1 then
+    begin
+      TimePassed := 1;
+    end;
     // if some downloads failed,
     // show them to user.
     if LFailedAtEnd > 0 then
@@ -1353,6 +1368,10 @@ begin
   RefreshDownloadedImageListClick(self);
   LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
 
+  if TimePassed < 1 then
+  begin
+    TimePassed := 1;
+  end;
   // if some downloads failed,
   // show them to user.
   if LFailedAtEnd > 0 then
