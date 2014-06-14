@@ -37,6 +37,7 @@ type
     ThreadNumberEdit: TJvSpinEdit;
     Label1: TsLabel;
     Button1: TButton;
+    DontLoadImgBtn: TCheckBox;
     procedure SaveBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -110,6 +111,7 @@ begin
     ThreadNumberEdit.Text := SettingsFile.ReadString('settings', 'threads', '1');
     DontDoubleDownloadBtn.Checked := SettingsFile.ReadBool('settings', 'double', True);
     ReverseDownloadBtn.Checked := SettingsFile.ReadBool('settings', 'reverse', False);
+    DontLoadImgBtn.Checked := SettingsFile.ReadBool('settings', 'loadimg', False);
   finally
     SettingsFile.Free;
   end;
@@ -133,6 +135,7 @@ begin
     SettingsFile.WriteString('settings', 'threads', ThreadNumberEdit.Text);
     SettingsFile.WriteBool('settings', 'double', DontDoubleDownloadBtn.Checked);
     SettingsFile.WriteBool('settings', 'reverse', ReverseDownloadBtn.Checked);
+    SettingsFile.WriteBool('settings', 'loadimg', DontLoadImgBtn.Checked);
   finally
     SettingsFile.Free;
   end;

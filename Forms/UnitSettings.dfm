@@ -3,7 +3,7 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 153
+  ClientHeight = 180
   ClientWidth = 248
   Color = clBtnFace
   DoubleBuffered = True
@@ -22,7 +22,7 @@ object SettingsForm: TSettingsForm
   OnShow = FormShow
   DesignSize = (
     248
-    153)
+    180)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TsLabel
@@ -34,7 +34,7 @@ object SettingsForm: TSettingsForm
   end
   object SaveBtn: TsBitBtn
     Left = 146
-    Top = 119
+    Top = 146
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -42,6 +42,7 @@ object SettingsForm: TSettingsForm
     TabOrder = 0
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 119
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -80,11 +81,19 @@ object SettingsForm: TSettingsForm
   end
   object Button1: TButton
     Left = 8
-    Top = 87
+    Top = 110
     Width = 232
     Height = 25
     Caption = 'Associate project files (fpd)'
     TabOrder = 4
     OnClick = Button1Click
+  end
+  object DontLoadImgBtn: TCheckBox
+    Left = 8
+    Top = 87
+    Width = 169
+    Height = 17
+    Caption = 'Do not load project images'
+    TabOrder = 5
   end
 end

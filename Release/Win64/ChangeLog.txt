@@ -1,10 +1,15 @@
+--0.4.4
+-Added: An option to not to load downloaded images in project preview page
+-Fixed: Opening a project with the program would take a long time
+
 --0.4.3
 -Added: Parallel download limit is now 16
 -Added: Parallel download limit is not limited to CPU core count now
 -Added: Better handling of failed links
+-Added: Portable version
 
 --0.4.2
--Added: A better handling if a link is empty
+-Added: Better handling of empty links
 -Fixed: A few small interface problems
 
 --0.4.1

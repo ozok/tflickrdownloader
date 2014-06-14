@@ -17,7 +17,7 @@
   * along with TFlickrDownloader.  If not, see <http://www.gnu.org/licenses/>.
   *
   * }
-  // todo: update statusbar text
+// todo: update statusbar text
 unit UnitMain;
 
 interface
@@ -174,6 +174,7 @@ type
     procedure UpdateThreadExecute(Sender: TObject; Params: Pointer);
     procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
     procedure DragDropDrop(Sender: TObject; Pos: TPoint; Value: TStrings);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
 
@@ -187,9 +188,9 @@ type
     FTotalFileSize: int64;
     FPrevTotalSize: Int64;
 
-    function IntToTime(IntTime: Integer): string;
+    FFormActivated: Boolean;
 
-    // procedure AssignLabelToProgressBar(Lbl: TsLabel; PB: TProgressBar);
+    function IntToTime(IntTime: Integer): string;
 
     function GetFileSizeEx(const FilePath: string): int64;
 
@@ -198,7 +199,7 @@ type
 
     procedure DeleteTempFiles();
 
-    procedure RegisterFileType(const _Register: boolean);
+    procedure RegisterFileType(const _Register: Boolean);
 
     procedure LoadSettings;
     procedure SaveSettings;
@@ -215,10 +216,10 @@ type
     AppDataFolder: string;
     TempFolder: string;
 
-    FFirstTime: boolean;
+    FFirstTime: Boolean;
 
     // loads project file
-    function LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): boolean;
+    function LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): Boolean;
 
     // arrange buttons
     procedure ProjectLoadedStatus;
@@ -226,11 +227,11 @@ type
     procedure StartStatus;
     procedure StopStatus;
 
-    procedure SetLedState(const StateOn: boolean; const ThreadID: integer);
+    procedure SetLedState(const StateOn: Boolean; const ThreadID: integer);
   end;
 
 const
-  BuildInt = 672;
+  BuildInt = 677;
   Portable = False;
 
 var
@@ -455,6 +456,37 @@ begin
   end;
 end;
 
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  // open a project file with the program
+  if not FFormActivated then
+  begin
+    if ParamCount = 1 then
+    begin
+      if FileExists(ParamStr(1)) then
+      begin
+        if LowerCase(ExtractFileExt(ParamStr(1))) = '.fpd' then
+        begin
+          if LoadProject(ParamStr(1), ProjectInfo) then
+          begin
+            ProjectFilePath := ParamStr(1);
+            ProjectLoadedStatus;
+            // photos downloaded
+            RefreshDownloadedImageListClick(self);
+          end
+          else
+          begin
+            ProjectUnLoadedStatus;
+            ProjectFilePath := '';
+            Application.MessageBox('Could not open project file.', 'Error', MB_ICONERROR);
+          end;
+        end;
+      end;
+    end;
+  end;
+  FFormActivated := True;
+end;
+
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   DeleteTempFiles;
@@ -501,10 +533,6 @@ begin
   StatusPage.Pages[1].TabVisible := False;
   StatusPage.ActivePageIndex := 0;
 
-  // AssignLabelToProgressBar(TotalProgressLabel, TotalProgressBar);
-  // AssignLabelToProgressBar(CurrentProgressLabel, CurrentProgressBar);
-  // AssignLabelToProgressBar(CurrentPageProgressLabel, CurrentPageProgressBar);
-
   // if portable then save ini file to program folder
   if not Portable then
   begin
@@ -544,6 +572,7 @@ begin
   end;
 
   DeleteTempFiles;
+  FFormActivated := False;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -556,30 +585,6 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  // open a project file with the program
-  if ParamCount = 1 then
-  begin
-    if FileExists(ParamStr(1)) then
-    begin
-      if LowerCase(ExtractFileExt(ParamStr(1))) = '.fpd' then
-      begin
-        if LoadProject(ParamStr(1), ProjectInfo) then
-        begin
-          ProjectFilePath := ParamStr(1);
-          ProjectLoadedStatus;
-          // photos downloaded
-          RefreshDownloadedImageListClick(self);
-        end
-        else
-        begin
-          ProjectUnLoadedStatus;
-          ProjectFilePath := '';
-          Application.MessageBox('Could not open project file.', 'Error', MB_ICONERROR);
-        end;
-      end;
-    end;
-  end;
-
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
   TotalProgressBar.Progress := 0;
   PageProgressBar.Progress := 0;
@@ -666,7 +671,7 @@ begin
   ShellExecute(0, 'open', PWideChar(ExtractFileDir(Application.ExeName) + '\gpl.txt'), nil, nil, SW_SHOWNORMAL);
 end;
 
-function TMainForm.LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): boolean;
+function TMainForm.LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): Boolean;
 var
   LProjectfile: TStringList;
   Node: TTreeNode;
@@ -792,7 +797,7 @@ var
   LImageProgress: integer;
   // progress of current thread
   LThreadProgresses: integer;
-  LStillRunning: boolean;
+  LStillRunning: Boolean;
   // number of running threads
   LActiveThreadCount: integer;
   // total number of images downloaded
@@ -1022,77 +1027,79 @@ begin
     exit;
   end;
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
-  if DirectoryExists(ProjectInfo.OutputFolder) then
+  if not SettingsForm.DontLoadImgBtn.Checked then
   begin
-    self.Enabled := False;
-    ProgressBar1.Style := pbstMarquee;
-    ImgSearchPanel.Left := (self.Width div 2) - (ImgSearchPanel.Width div 2);
-    ImgSearchPanel.Top := (self.Height div 2) - (ImgSearchPanel.Height div 2);
-    ImgSearchPanel.Visible := True;
-    ImgSearchPanel.BringToFront;
-    ImgSearchPanel.Repaint;
-    Sleep(100);
+    if DirectoryExists(ProjectInfo.OutputFolder) then
+    begin
+      self.Enabled := False;
+      ProgressBar1.Style := pbstMarquee;
+      ImgSearchPanel.Left := (self.Width div 2) - (ImgSearchPanel.Width div 2);
+      ImgSearchPanel.Top := (self.Height div 2) - (ImgSearchPanel.Height div 2);
+      ImgSearchPanel.Visible := True;
+      ImgSearchPanel.BringToFront;
+      ImgSearchPanel.Repaint;
+      Sleep(100);
 
-    // photos downloaded
-    DownloadedImageList.Items.Clear;
-    DownloadedImageList.Items.BeginUpdate;
-    try
-      if FindFirst(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + '*.*', faAnyFile or faDirectory, SR) = 0 then
-      begin
-        try
-          repeat
-            Application.ProcessMessages;
+      // photos downloaded
+      DownloadedImageList.Items.Clear;
+      DownloadedImageList.Items.BeginUpdate;
+      try
+        if FindFirst(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + '*.*', faAnyFile or faDirectory, SR) = 0 then
+        begin
+          try
+            repeat
+              Application.ProcessMessages;
 
-            LFileExt := LowerCase(ExtractFileExt(SR.Name));
-            if (LFileExt = '.jpg') or (LFileExt = '.jpeg') or (LFileExt = '.png') or (LFileExt = '.bmp') or (LFileExt = '.gif') then
-            begin
-              ListItem := DownloadedImageList.Items.Add;
-              ListItem.Caption := SR.Name;
-              ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt))); // dimensions
-              if (LFileExt = '.jpg') or (LFileExt = '.jpeg') then
+              LFileExt := LowerCase(ExtractFileExt(SR.Name));
+              if (LFileExt = '.jpg') or (LFileExt = '.jpeg') or (LFileExt = '.png') or (LFileExt = '.bmp') or (LFileExt = '.gif') then
               begin
-                ImgSize.GetJPGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-              end
-              else if LFileExt = '.png' then
-              begin
-                ImgSize.GetPNGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-              end
-              else if LFileExt = '.gif' then
-              begin
-                ImgSize.GetGIFSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-              end
-              else if LFileExt = '.bmp' then
-              begin
-                ImgSize.GetBMPSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+                ListItem := DownloadedImageList.Items.Add;
+                ListItem.Caption := SR.Name;
+                ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt))); // dimensions
+                if (LFileExt = '.jpg') or (LFileExt = '.jpeg') then
+                begin
+                  ImgSize.GetJPGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+                end
+                else if LFileExt = '.png' then
+                begin
+                  ImgSize.GetPNGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+                end
+                else if LFileExt = '.gif' then
+                begin
+                  ImgSize.GetGIFSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+                end
+                else if LFileExt = '.bmp' then
+                begin
+                  ImgSize.GetBMPSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
+                end;
+                ListItem.SubItems.Add(FloatToStr(LWidth) + 'x' + FloatToStr(LHeight));
+                ListItem.SubItems.Add(FloatToStr(FileSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name) div 1024) + ' KB');
+                ListItem.StateIndex := 0;
               end;
-              ListItem.SubItems.Add(FloatToStr(LWidth) + 'x' + FloatToStr(LHeight));
-              ListItem.SubItems.Add(FloatToStr(FileSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name) div 1024) + ' KB');
-              ListItem.StateIndex := 0;
-            end;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
+            until FindNext(SR) <> 0;
+          finally
+            FindClose(SR);
+          end;
         end;
+      finally
+        DownloadedImageList.Items.EndUpdate;
+        DownloadedImageList.BoundLabel.Caption := 'Downloaded images for this project (' + FloatToStr(DownloadedImageList.Items.Count) + '):';
+        ImgSearchPanel.Visible := False;
+        self.Enabled := True;
+        self.BringToFront;
+        ProgressBar1.Style := pbstNormal;
       end;
-    finally
-      DownloadedImageList.Items.EndUpdate;
-      DownloadedImageList.BoundLabel.Caption := 'Downloaded images for this project (' + FloatToStr(DownloadedImageList.Items.Count) + '):';
-      ImgSearchPanel.Visible := False;
-      self.Enabled := True;
-      self.BringToFront;
-      ProgressBar1.Style := pbstNormal;
+    end
+    else
+    begin
+      Application.MessageBox('Unable to find output folder.', 'Error', MB_ICONERROR);
+      DownloadedImageList.Items.Clear;
+      DownloadedImageListClick(self);
     end;
-  end
-  else
-  begin
-    Application.MessageBox('Unable to find output folder.', 'Error', MB_ICONERROR);
-    DownloadedImageList.Items.Clear;
-    DownloadedImageListClick(self);
   end;
-
 end;
 
-procedure TMainForm.RegisterFileType(const _Register: boolean);
+procedure TMainForm.RegisterFileType(const _Register: Boolean);
 begin
   with TRegistry.Create do
     try
@@ -1149,7 +1156,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SetLedState(const StateOn: boolean; const ThreadID: integer);
+procedure TMainForm.SetLedState(const StateOn: Boolean; const ThreadID: integer);
 begin
   if StateOn then
   begin
