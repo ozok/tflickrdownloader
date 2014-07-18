@@ -6,7 +6,7 @@ object AboutForm: TAboutForm
   Caption = 'About'
   ClientHeight = 210
   ClientWidth = 269
-  Color = clBtnFace
+  Color = 3355443
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -21,16 +21,73 @@ object AboutForm: TAboutForm
     210)
   PixelsPerInch = 96
   TextHeight = 13
-  object PageControl1: TPageControl
+  object Button1: TsButton
+    Left = 151
+    Top = 177
+    Width = 110
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = 'OK'
+    TabOrder = 0
+    OnClick = Button1Click
+    SkinData.SkinSection = 'BUTTON'
+  end
+  object Button2: TsButton
+    Left = 8
+    Top = 146
+    Width = 110
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = 'Sourceforge Page'
+    TabOrder = 1
+    OnClick = Button2Click
+    SkinData.SkinSection = 'BUTTON'
+  end
+  object Button3: TsButton
+    Left = 8
+    Top = 177
+    Width = 110
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = 'Donate'
+    TabOrder = 2
+    OnClick = Button3Click
+    SkinData.SkinSection = 'BUTTON'
+  end
+  object Button4: TsButton
+    Left = 151
+    Top = 146
+    Width = 110
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = 'Codeplex Page'
+    TabOrder = 3
+    OnClick = Button4Click
+    SkinData.SkinSection = 'BUTTON'
+  end
+  object sPageControl1: TsPageControl
     Left = 8
     Top = 8
     Width = 253
     Height = 132
-    ActivePage = TabSheet1
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    TabOrder = 0
-    object TabSheet1: TTabSheet
+    ActivePage = sTabSheet2
+    TabOrder = 4
+    SkinData.SkinSection = 'PAGECONTROL'
+    object sTabSheet2: TsTabSheet
       Caption = 'About'
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      object Label2: TsLabel
+        Left = 0
+        Top = 57
+        Width = 245
+        Height = 15
+        Align = alTop
+        Alignment = taCenter
+        AutoSize = False
+        Caption = 'TFlickrDownloader 0.5.1 Build: 780'
+        ExplicitLeft = 3
+      end
       object Image1: TImage
         Left = 0
         Top = 0
@@ -331,31 +388,8 @@ object AboutForm: TAboutForm
           73FF39AF73FF39AF73FF39AE72FF2BA968ED109E559901984B2200967C000000
           000000000000}
         Proportional = True
-        ExplicitWidth = 621
       end
-      object Label2: TLabel
-        Left = 0
-        Top = 57
-        Width = 245
-        Height = 15
-        Align = alTop
-        Alignment = taCenter
-        AutoSize = False
-        Caption = 'TFlickrDownloader 0.4.3 Build: 677'
-        ExplicitWidth = 621
-      end
-      object Label4: TLabel
-        Left = 0
-        Top = 72
-        Width = 245
-        Height = 15
-        Align = alTop
-        Alignment = taCenter
-        AutoSize = False
-        Caption = '2014 (c) ozok26@gmail.com'
-        ExplicitWidth = 621
-      end
-      object Label5: TLabel
+      object Label4: TsLabel
         Left = 0
         Top = 87
         Width = 245
@@ -363,54 +397,30 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
+        Caption = '2014 (c) ozok26@gmail.com'
+        ExplicitTop = 72
+        ExplicitWidth = 621
+      end
+      object Label5: TsLabel
+        Left = 0
+        Top = 72
+        Width = 245
+        Height = 15
+        Align = alTop
+        Alignment = taCenter
+        AutoSize = False
         Caption = 'GPLv2'
+        ExplicitTop = 87
         ExplicitWidth = 621
       end
     end
-    object TabSheet2: TTabSheet
+    object sTabSheet1: TsTabSheet
       Caption = '3rd Party'
-      ImageIndex = 1
-      object Label1: TLabel
+      SkinData.CustomColor = False
+      SkinData.CustomFont = False
+      object Label7: TsLabel
         Left = 0
-        Top = 13
-        Width = 245
-        Height = 25
-        Cursor = crHandPoint
-        Align = alTop
-        Alignment = taCenter
-        AutoSize = False
-        Caption = 'JVCL - http://jvcl.delphi-jedi.org/'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHotLight
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        OnClick = Label1Click
-        ExplicitTop = 0
-      end
-      object Label6: TLabel
-        Left = 0
-        Top = 38
-        Width = 245
-        Height = 25
-        Cursor = crHandPoint
-        Align = alTop
-        Alignment = taCenter
-        AutoSize = False
-        Caption = 'AlphaControls - www.alphaskins.com'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHotLight
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        OnClick = Label6Click
-        ExplicitTop = 25
-      end
-      object Label7: TLabel
-        Left = 0
-        Top = 63
+        Top = 25
         Width = 245
         Height = 25
         Cursor = crHandPoint
@@ -418,63 +428,63 @@ object AboutForm: TAboutForm
         Alignment = taCenter
         AutoSize = False
         Caption = 'CCR.Exif - https://code.google.com/p/ccr-exif/'
+        ParentFont = False
+        OnClick = Label7Click
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clHotLight
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
-        ParentFont = False
-        OnClick = Label7Click
         ExplicitTop = 40
       end
-      object Label3: TLabel
+      object Label6: TsLabel
+        Left = 0
+        Top = 50
+        Width = 245
+        Height = 25
+        Cursor = crHandPoint
+        Align = alTop
+        Alignment = taCenter
+        AutoSize = False
+        Caption = 'AlphaControls - www.alphaskins.com'
+        ParentFont = False
+        OnClick = Label6Click
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clHotLight
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ExplicitTop = 25
+      end
+      object Label1: TsLabel
         Left = 0
         Top = 0
         Width = 245
-        Height = 13
+        Height = 25
+        Cursor = crHandPoint
         Align = alTop
-        ExplicitWidth = 3
+        Alignment = taCenter
+        AutoSize = False
+        Caption = 'JVCL - http://jvcl.delphi-jedi.org/'
+        ParentFont = False
+        OnClick = Label1Click
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clHotLight
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
       end
     end
   end
-  object Button1: TButton
-    Left = 151
-    Top = 177
-    Width = 110
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'OK'
-    TabOrder = 1
-    OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 8
-    Top = 146
-    Width = 110
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Sourceforge Page'
-    TabOrder = 2
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 8
-    Top = 177
-    Width = 110
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Donate'
-    TabOrder = 3
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 151
-    Top = 146
-    Width = 110
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'Codeplex Page'
-    TabOrder = 4
-    OnClick = Button4Click
+  object sSkinProvider1: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Left = 192
+    Top = 48
   end
 end

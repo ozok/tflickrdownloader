@@ -220,12 +220,12 @@ var
   fh: HFile;
   bf: TBITMAPFILEHEADER;
   bh: TBITMAPINFOHEADER;
-  Sig: array[0..1] of byte;
-  x: integer;
-  Seg: byte;
-  Dummy: array[0..15] of byte;
-  skipLen: word;
-  OkBmp, Readgood: Boolean;
+//  Sig: array[0..1] of byte;
+//  x: integer;
+//  Seg: byte;
+//  Dummy: array[0..15] of byte;
+//  skipLen: word;
+  OkBmp: Boolean;
 begin
   // Open the file and get a handle to it's BITMAPINFO
   OkBmp := False;

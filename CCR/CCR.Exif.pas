@@ -1113,7 +1113,7 @@ FSection:
 {$IF Declared(TGraphic)}
       procedure CreateThumbnail(Source: TGraphic; ThumbnailWidth: Integer = StandardExifThumbnailWidth; ThumbnailHeight: Integer = StandardExifThumbnailHeight);
       procedure StandardizeThumbnail;
-{$IFEND}
+{$ENDIF}
       function LoadFromGraphic(Stream: TStream): Boolean;
       overload;
       inline;
@@ -1152,7 +1152,7 @@ FSection:
       overload;
       inline;
       deprecated {$IFDEF DepCom}'Use SaveToGraphic'{$ENDIF};
-{$IFEND}
+{$ENDIF}
     published
       property RemovePaddingTagsOnSave: Boolean read FRemovePaddingTagsOnSave write FRemovePaddingTagsOnSave default True;
       property Thumbnail;
@@ -1281,7 +1281,7 @@ function DecimalSeparator: Char; inline; // avoid compiler warning about depreca
 begin
   Result := FormatSettings.DecimalSeparator;
 end;
-{$IFEND}
+{$ENDIF}
 {$IF Declared(TGraphic)}
 
 function IsGraphicEmpty(AGraphic: TGraphic): Boolean; inline;
@@ -1451,7 +1451,7 @@ begin
     Bitmap.Free;
   end;
 end;
-{$IFEND}
+{$ENDIF}
 
 function DoRemoveMetaDataFromJPEG(InStream, OutStream: TStream; KindsToRemove: TJPEGMetadataKinds): TJPEGMetadataKinds;
 var
@@ -3934,7 +3934,8 @@ end;
 
 function TCustomExifData.HasThumbnail: Boolean;
 begin
-  Result := not IsGraphicEmpty(FThumbnailOrNil);
+  Result := false;
+//  Result := not IsGraphicEmpty(FThumbnailOrNil);
 end;
 
 function TCustomExifData.LoadFromGraphic(Stream: TStream): Boolean;
@@ -5416,7 +5417,7 @@ end;
 procedure TExifDataPatcher.GetImage<T>(Dest: T);
 {$ELSE}
   procedure TExifDataPatcher.GetImage(const Dest: IStreamPersist);
-{$IFEND}
+{$ENDIF}
   begin
     CheckFileIsOpen;
     FStream.Position := 0;
@@ -5603,7 +5604,7 @@ procedure TExifDataPatcher.GetImage<T>(Dest: T);
       if (Image.Width > StandardExifThumbnailWidth) or (Image.Height > StandardExifThumbnailHeight) then
         CreateExifThumbnail(Image, Image);
     end;
-{$IFEND}
+{$ENDIF}
     procedure TExifData.DefineProperties(Filer: TFiler);
     begin
       inherited;
@@ -5674,7 +5675,7 @@ procedure TExifDataPatcher.GetImage<T>(Dest: T);
         Stream.Free;
       end;
     end;
-{$IFEND}
+{$ENDIF}
     procedure TExifData.LoadFromStream(Stream: TStream);
     begin
       Clear(False);
@@ -5795,7 +5796,7 @@ procedure TExifDataPatcher.GetImage<T>(Dest: T);
     begin
       SaveToGraphic(JPEGImage);
     end;
-{$IFEND}
+{$ENDIF}
 
   type
     TSectionSavingInfo = record

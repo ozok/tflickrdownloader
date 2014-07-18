@@ -26,7 +26,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ComCtrls, Vcl.Buttons, IniFiles, Vcl.Mask, JvExMask, JvSpin, sCheckBox,
-  sBitBtn, sLabel, ShellAPI;
+  sBitBtn, sLabel, ShellAPI, sEdit, sSpinEdit, sSkinProvider;
 
 type
   TSettingsForm = class(TForm)
@@ -34,10 +34,10 @@ type
     SaveBtn: TsBitBtn;
     DontDoubleDownloadBtn: TsCheckBox;
     ReverseDownloadBtn: TsCheckBox;
-    ThreadNumberEdit: TJvSpinEdit;
-    Label1: TsLabel;
     Button1: TButton;
-    DontLoadImgBtn: TCheckBox;
+    sSkinProvider1: TsSkinProvider;
+    ThreadNumberEdit: TsSpinEdit;
+    DontLoadImgBtn: TsCheckBox;
     procedure SaveBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);

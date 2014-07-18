@@ -32,7 +32,7 @@ uses
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils;
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfoWaitThread;
 
 type
   TDownloadItemInfo = packed record
@@ -114,10 +114,9 @@ type
     sGroupBox1: TsGroupBox;
     sSkinProvider1: TsSkinProvider;
     sPanel2: TsGroupBox;
-    sGroupBox2: TsGroupBox;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
+    Bevel1: TsBevel;
+    Bevel2: TsBevel;
+    Bevel3: TsBevel;
     LED1: TsImage;
     LED2: TsImage;
     LED3: TsImage;
@@ -143,6 +142,8 @@ type
     LED14: TsImage;
     LED16: TsImage;
     LED13: TsImage;
+    sPanel1: TsPanel;
+    ImageCountLabel: TsLabel;
     procedure FormCreate(Sender: TObject);
     procedure NewProjectBtnClick(Sender: TObject);
     procedure StartBtnClick(Sender: TObject);
@@ -205,6 +206,8 @@ type
     procedure SaveSettings;
 
     function FileSize(const FilePath: string): Int64;
+
+    procedure ParseInfoFile(const ProcessCount: integer);
   public
     { Public declarations }
     ProjectInfo: TProjectInfo;
@@ -217,6 +220,8 @@ type
     TempFolder: string;
 
     FFirstTime: Boolean;
+
+    DoneSearchingFiles: Boolean;
 
     // loads project file
     function LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): Boolean;
@@ -231,7 +236,7 @@ type
   end;
 
 const
-  BuildInt = 677;
+  BuildInt = 780;
   Portable = False;
 
 var
@@ -275,16 +280,6 @@ begin
   end;
 end;
 
-// procedure TMainForm.AssignLabelToProgressBar(Lbl: TLabel; PB: TProgressBar);
-// begin
-// Lbl.Parent := PB;
-// Lbl.Align := alClient;
-// Lbl.Alignment := taCenter;
-// Lbl.Caption := '0%';
-// Lbl.BringToFront;
-// PB.SendToBack;
-// end;
-
 procedure TMainForm.C3Click(Sender: TObject);
 begin
   ShellExecute(0, 'open', PWideChar(ExtractFileDir(Application.ExeName) + '\changelog.txt'), nil, nil, SW_SHOWNORMAL);
@@ -295,7 +290,7 @@ begin
   ProjectInfoList.Items.Clear;
   DownloadedImageList.Items.Clear;
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
-  DownloadedImageList.BoundLabel.Caption := 'Downloaded images for this project (0):';
+  ImageCountLabel.Caption := 'Downloaded images for this project (0):';
   ProjectFilePath := '';
   ProjectUnLoadedStatus;
 end;
@@ -780,6 +775,61 @@ begin
   end;
 end;
 
+procedure TMainForm.ParseInfoFile(const ProcessCount: integer);
+var
+  LFile: TStreamReader;
+  LSplitList: TStringList;
+  LLine: string;
+  LListItem: TListItem;
+  I: Integer;
+  LFileName: string;
+begin
+
+  LSplitList := TStringList.Create;
+  try
+    LSplitList.StrictDelimiter := True;
+    LSplitList.Delimiter := '|';
+    for I := 0 to ProcessCount-1 do
+    begin
+      if Portable then
+      begin
+        LFileName := ExtractFileDir(Application.ExeName) + '\info' + FloatToStr(i) + '.txt';
+      end
+      else
+      begin
+        LFileName := AppDataFolder + '\info' + FloatToStr(i) + '.txt';
+      end;
+
+      if FileExists(LFileName) then
+      begin
+        LFile := TStreamReader.Create(LFileName, True);
+        try
+          while not LFile.EndOfStream do
+          begin
+            LLine := LFile.ReadLine;
+            LSplitList.DelimitedText := LLine;
+            if LSplitList.Count = 4 then
+            begin
+              LListItem := DownloadedImageList.Items.Add;
+              LListItem.Caption := LSplitList[0];
+              LListItem.SubItems.Add(LSplitList[1]);
+              LListItem.SubItems.Add(LSplitList[2]);
+              LListItem.SubItems.Add(LSplitList[3]);
+              LListItem.StateIndex := 0;
+            end;
+          end;
+        finally
+          LFile.Close;
+          LFile.Free;
+        end;
+      end;
+    end;
+  finally
+    LSplitList.Free;
+  end;
+
+end;
+
 procedure TMainForm.PrevThreadBtnClick(Sender: TObject);
 begin
   if DownloadThreadsList.ItemIndex > 0 then
@@ -1020,6 +1070,13 @@ var
   LFileExt: string;
   ListItem: TListItem;
   LWidth, LHeight: Word;
+  LFileInfoThread: TFileInfoWaitThread;
+  LFiles: TStringList;
+  I: Integer;
+  LStillRunning: Boolean;
+  LProcessCount: integer;
+  j: Integer;
+  LOutputFiles: TStringList;
 begin
   if Length(ProjectFilePath) < 1 then
   begin
@@ -1043,47 +1100,68 @@ begin
       // photos downloaded
       DownloadedImageList.Items.Clear;
       DownloadedImageList.Items.BeginUpdate;
+
+      LFiles := TStringList.Create;
+      LOutputFiles := TStringList.Create;
       try
+        // find files
         if FindFirst(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + '*.*', faAnyFile or faDirectory, SR) = 0 then
         begin
-          try
-            repeat
-              Application.ProcessMessages;
+          repeat
+            LFileExt := LowerCase(ExtractFileExt(SR.Name));
+            if (LFileExt = '.jpg') or (LFileExt = '.jpeg') or (LFileExt = '.png') or (LFileExt = '.bmp') or (LFileExt = '.gif') then
+            begin
+              LFiles.Add(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name);
+            end;
+          until FindNext(SR) <> 0;
+          System.SysUtils.FindClose(SR);
+        end;
 
-              LFileExt := LowerCase(ExtractFileExt(SR.Name));
-              if (LFileExt = '.jpg') or (LFileExt = '.jpeg') or (LFileExt = '.png') or (LFileExt = '.bmp') or (LFileExt = '.gif') then
-              begin
-                ListItem := DownloadedImageList.Items.Add;
-                ListItem.Caption := SR.Name;
-                ListItem.SubItems.Add(UpperCase(Copy(LFileExt, 2, MaxInt))); // dimensions
-                if (LFileExt = '.jpg') or (LFileExt = '.jpeg') then
-                begin
-                  ImgSize.GetJPGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-                end
-                else if LFileExt = '.png' then
-                begin
-                  ImgSize.GetPNGSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-                end
-                else if LFileExt = '.gif' then
-                begin
-                  ImgSize.GetGIFSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-                end
-                else if LFileExt = '.bmp' then
-                begin
-                  ImgSize.GetBMPSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name, LWidth, LHeight);
-                end;
-                ListItem.SubItems.Add(FloatToStr(LWidth) + 'x' + FloatToStr(LHeight));
-                ListItem.SubItems.Add(FloatToStr(FileSize(IncludeTrailingPathDelimiter(ProjectInfo.OutputFolder + '\' + ProjectInfo.Name + '\') + SR.Name) div 1024) + ' KB');
-                ListItem.StateIndex := 0;
-              end;
-            until FindNext(SR) <> 0;
-          finally
-            FindClose(SR);
+        // delete files from last time
+        for I := 0 to 15 do
+        begin
+          if FileExists(AppDataFolder + '\image' + FloatToStr(i) + '.txt') then
+          begin
+            DeleteFile(AppDataFolder + '\image' + FloatToStr(i) + '.txt')
+          end;
+          if FileExists(AppDataFolder + '\info' + FloatToStr(i) + '.txt') then
+          begin
+            DeleteFile(AppDataFolder + '\info' + FloatToStr(i) + '.txt')
           end;
         end;
+
+        // number of parallel process count
+        if LFiles.Count > CPUCount then
+        begin
+          LProcessCount := CPUCount
+        end
+        else
+        begin
+          LProcessCount := LFiles.Count;
+        end;
+
+        // create and run threads
+        for I := 0 to LProcessCount-1 do
+        begin
+          LOutputFiles.Add(AppDataFolder + '\info' + FloatToStr(i) + '.txt');
+        end;
+        try
+          DoneSearchingFiles := False;
+          LFileInfoThread := TFileInfoWaitThread.Create(LProcessCount, LFiles, LOutputFiles);
+          while not DoneSearchingFiles do
+          begin
+            Application.ProcessMessages;
+            Sleep(100)
+          end;
+        finally
+          ParseInfoFile(LProcessCount);
+        end;
+
       finally
+        LFiles.Free;
+        LOutputFiles.Free;
         DownloadedImageList.Items.EndUpdate;
-        DownloadedImageList.BoundLabel.Caption := 'Downloaded images for this project (' + FloatToStr(DownloadedImageList.Items.Count) + '):';
+        ImageCountLabel.Caption := 'Downloaded images for this project (' + FloatToStr(DownloadedImageList.Items.Count) + '):';
         ImgSearchPanel.Visible := False;
         self.Enabled := True;
         self.BringToFront;
@@ -1467,7 +1545,7 @@ procedure TMainForm.UpdateThreadExecute(Sender: TObject; Params: Pointer);
 begin
   with UpdateDownloader do
   begin
-    Url := 'http://dl.dropbox.com/u/9617171/tpdversion.txt';
+    Url := 'http://sourceforge.net/projects/tphotodownloader/files/version.txt/download';
     Start;
   end;
 

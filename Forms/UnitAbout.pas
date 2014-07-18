@@ -25,25 +25,26 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, acPNG,
-  Vcl.ExtCtrls, JvExControls, JvScrollText, ShellAPI;
+  Vcl.ExtCtrls, JvExControls, JvScrollText, ShellAPI, sButton, sSkinProvider,
+  sPageControl, sLabel;
 
 type
   TAboutForm = class(TForm)
-    PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
-    Button1: TButton;
+    Button1: TsButton;
     Image1: TImage;
-    Label2: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Button2: TButton;
-    Button3: TButton;
-    TabSheet2: TTabSheet;
-    Label1: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label3: TLabel;
-    Button4: TButton;
+    Label2: TsLabel;
+    Label4: TsLabel;
+    Label5: TsLabel;
+    Button2: TsButton;
+    Button3: TsButton;
+    Label1: TsLabel;
+    Label6: TsLabel;
+    Label7: TsLabel;
+    Button4: TsButton;
+    sSkinProvider1: TsSkinProvider;
+    sPageControl1: TsPageControl;
+    sTabSheet1: TsTabSheet;
+    sTabSheet2: TsTabSheet;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
