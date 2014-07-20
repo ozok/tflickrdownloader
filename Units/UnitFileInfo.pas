@@ -3,23 +3,33 @@ unit UnitFileInfo;
 interface
 
 uses
-  System.Classes, ImgSize, Windows, SysUtils;
+  System.Classes, ImgSize, Windows, SysUtils, IdBaseComponent, IdThreadComponent, IdThread;
 
 type
-  TFileInfo = class(TThread)
+  TFileInfo = class(TObject)
   private
     { Private declarations }
-    FOutputFilePath: string;
     FFiles: TStringList;
     FDone: Boolean;
+    FOutput: TStringList;
+    FThread: TIdThreadComponent;
+    FOutputFile: string;
+    FThreadHandle: THandle;
 
     function FileSizeEx(const FilePath: string): Int64;
-  protected
-    procedure Execute; override;
+
+    procedure ThreadRun(Sender: TIdThreadComponent);
+    procedure ThreadStopped(Sender: TIdThreadComponent);
+    procedure ThreadTerminate(Sender: TIdThreadComponent);
+    function GetHandle: THandle;
   public
     property Done: Boolean read FDone;
+    property ThreadHandle: THandle read GetHandle;
     constructor Create(const Files: TStringList; const OutputFilePath: string);
     destructor Destroy; override;
+
+    procedure Start;
+    procedure Stop;
   end;
 
 implementation
@@ -28,30 +38,67 @@ implementation
 
 constructor TFileInfo.Create(const Files: TStringList; const OutputFilePath: string);
 begin
-  inherited Create(False);
-//  FreeOnTerminate := True;
   FDone := False;
   FFiles := TStringList.Create;
   FFiles.AddStrings(Files);
-  FOutputFilePath := OutputFilePath;
+  FOutput := TStringList.Create;
+  FOutputFile := OutputFilePath;
+
+  FThread := TIdThreadComponent.Create;
+  FThread.Priority := tpIdle;
+  FThread.StopMode := smTerminate;
+  FThread.OnRun := ThreadRun;
+  FThread.OnStopped := ThreadStopped;
+  FThread.OnTerminate := ThreadTerminate;
+  Start;
 end;
 
 destructor TFileInfo.Destroy;
 begin
   inherited;
   FFiles.Free;
+  FOutput.Free;
+  FThread.Free;
 end;
 
-procedure TFileInfo.Execute;
+function TFileInfo.FileSizeEx(const FilePath: string): Int64;
+var
+  LInfo: TWin32FileAttributeData;
+begin
+  Result := -1;
+  if GetFileAttributesEx(PWideChar(FilePath), GetFileExInfoStandard, @LInfo) then
+  begin
+    Result := Int64(LInfo.nFileSizeLow) or Int64(LInfo.nFileSizeHigh shl 32);
+  end;
+end;
+
+function TFileInfo.GetHandle: THandle;
+begin
+  Result := FThread.Handle;
+end;
+
+procedure TFileInfo.Start;
+begin
+  FDone := False;
+  FThread.Start;
+end;
+
+procedure TFileInfo.Stop;
+begin
+  if not FThread.Terminated then
+  begin
+    FThread.Terminate;
+  end;
+end;
+
+procedure TFileInfo.ThreadRun(Sender: TIdThreadComponent);
 var
   ListItem: string;
   LWidth, LHeight: Word;
   LFileExt: string;
   i: integer;
-  LOutputFile: TStringList;
 begin
   FDone := False;
-  LOutputFile := TStringList.Create;
   try
     for i := 0 to FFiles.Count-1 do
     begin
@@ -76,24 +123,23 @@ begin
       end;
       ListItem := ListItem + '|' + FloatToStr(LWidth) + 'x' + FloatToStr(LHeight);
       ListItem := ListItem + '|' + FloatToStr(FileSizeEx(FFiles[i]) div 1024) + ' KB';
-      LOutputFile.Add(ListItem);
+      FOutput.Add(ListItem);
     end;
-    LOutputFile.SaveToFile(FOutputFilePath, TEncoding.UTF8);
+    FOutput.SaveToFile(FOutputFile, TEncoding.UTF8);
   finally
-    LOutputFile.Free;
+    FThread.Terminate;
+    FDone := True;
   end;
+end;
+
+procedure TFileInfo.ThreadStopped(Sender: TIdThreadComponent);
+begin
   FDone := True;
 end;
 
-function TFileInfo.FileSizeEx(const FilePath: string): Int64;
-var
-  LInfo: TWin32FileAttributeData;
+procedure TFileInfo.ThreadTerminate(Sender: TIdThreadComponent);
 begin
-  Result := -1;
-  if GetFileAttributesEx(PWideChar(FilePath), GetFileExInfoStandard, @LInfo) then
-  begin
-    Result := Int64(LInfo.nFileSizeLow) or Int64(LInfo.nFileSizeHigh shl 32);
-  end;
+  FDone := True;
 end;
 
 end.

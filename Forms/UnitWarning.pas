@@ -23,16 +23,18 @@ unit UnitWarning;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, 
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sSkinProvider,
+  sRadioButton, sButton;
 
 type
   TWarningForm = class(TForm)
     StaticText1: TStaticText;
-    Button1: TButton;
-    Button2: TButton;
-    OKRDBtn: TRadioButton;
-    NORDBtn: TRadioButton;
+    Button1: TsButton;
+    Button2: TsButton;
+    OKRDBtn: TsRadioButton;
+    NORDBtn: TsRadioButton;
+    sSkinProvider1: TsSkinProvider;
     procedure OKRDBtnClick(Sender: TObject);
     procedure NORDBtnClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -77,4 +79,4 @@ begin
   Button1.Enabled := OKRDBtn.Checked;
 end;
 
-end.
+end.

@@ -3,24 +3,29 @@ unit UnitFileInfoWaitThread;
 interface
 
 uses
-  System.Classes, UnitFileInfo, Windows;
+  System.Classes, UnitFileInfo, Windows, IdBaseComponent, IdThreadComponent, IdThread, SysUtils;
 
 type
-  TFileInfoWaitThread = class(TThread)
+  TFileInfoWaitThread = class(TObject)
   private
     { Private declarations }
+    FThread: TIdThreadComponent;
     FHandles: array of THandle;
     FThreads: array of TFileInfo;
     FFiles: array of TStringList;
     FFilesTotal: TStringList;
     FThreadCount: integer;
     FOutputFiles: TStringList;
+    FDone: Boolean;
 
     procedure Finished;
-  protected
-    procedure Execute; override;
+    procedure ThreadRun(Sender: TIdThreadComponent);
+    procedure ThreadStopped(Sender: TIdThreadComponent);
+    procedure ThreadTerminate(Sender: TIdThreadComponent);
   public
-    constructor Create(const ThreadCount: integer; const Files: TStringList; const OutputPaths: TStringList);
+    property Done: Boolean read FDone;
+
+    constructor Create(const ThreadCount: integer; const Files: TStringlist; const OutputPaths: TStringList);
     destructor Destroy; override;
   end;
 
@@ -30,11 +35,11 @@ implementation
 
 uses UnitMain;
 
-constructor TFileInfoWaitThread.Create(const ThreadCount: integer; const Files: TStringList; const OutputPaths: TStringList);
+constructor TFileInfoWaitThread.Create(const ThreadCount: integer; const Files: TStringlist; const OutputPaths: TStringList);
 var
   I: Integer;
 begin
-  inherited Create(False);
+  FDone := False;
   SetLength(FHandles, ThreadCount);
   SetLength(FThreads, ThreadCount);
   SetLength(FFiles, ThreadCount);
@@ -44,10 +49,19 @@ begin
     FFiles[i] := TStringList.Create;
   end;
   FFilesTotal := TStringList.Create;
-  FFilesTotal.addstrings(Files);
+  FFilesTotal.AddStrings(Files);
   FOutputFiles := TStringList.Create;
   FOutputFiles.AddStrings(OutputPaths);
   FThreadCount := ThreadCount;
+
+  FThread := TIdThreadComponent.Create;
+  FThread.Priority := tpIdle;
+  FThread.StopMode := smTerminate;
+  FThread.OnRun := ThreadRun;
+  FThread.OnStopped := ThreadStopped;
+  FThread.OnTerminate := ThreadTerminate;
+
+  FThread.Start;
 end;
 
 destructor TFileInfoWaitThread.Destroy;
@@ -63,7 +77,13 @@ begin
   FOutputFiles.Free;
 end;
 
-procedure TFileInfoWaitThread.Execute;
+procedure TFileInfoWaitThread.Finished;
+begin
+  MainForm.DoneSearchingFiles := True;
+end;
+
+
+procedure TFileInfoWaitThread.ThreadRun(Sender: TIdThreadComponent);
 var
   i: integer;
   LRunningCount: integer;
@@ -75,9 +95,9 @@ begin
   for I := 0 to FThreadCount-1 do
   begin
     FThreads[i] := TFileInfo.Create(FFiles[i], FOutputFiles[i]);
-    FHandles[i] := FThreads[i].Handle;
-    Sleep(100);
+    FHandles[i] := FThreads[i].ThreadHandle;
   end;
+  try
   LRunningCount := 0;
   while LRunningCount > 0 do
   begin
@@ -94,13 +114,25 @@ begin
     end;
     Sleep(100);
   end;
-//  WaitForMultipleObjects(FThreadCount, @FHandles, True, INFINITE);
-  Synchronize(Finished);
+  //WaitForMultipleObjects(FThreadCount, @FHandles, True, INFINITE);
+  finally
+  for I := 0 to FThreadCount-1 do
+    begin
+      FThreads[i].Free;
+    end;
+    FDone := True;
+  end;
+
 end;
 
-procedure TFileInfoWaitThread.Finished;
+procedure TFileInfoWaitThread.ThreadStopped(Sender: TIdThreadComponent);
 begin
-  MainForm.DoneSearchingFiles := True;
+  FDone := True;
+end;
+
+procedure TFileInfoWaitThread.ThreadTerminate(Sender: TIdThreadComponent);
+begin
+  FDone := True;
 end;
 
 end.

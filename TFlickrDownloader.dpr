@@ -35,7 +35,6 @@ uses
   CCR.Exif.XMPUtils in 'CCR\CCR.Exif.XMPUtils.pas',
   ImgSize in 'Units\ImgSize.pas',
   UnitFileInfo in 'Units\UnitFileInfo.pas',
-  UnitFileInfoWaitThread in 'Units\UnitFileInfoWaitThread.pas',
   Vcl.Themes,
   Vcl.Styles;
 

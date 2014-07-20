@@ -6,7 +6,7 @@ object WarningForm: TWarningForm
   Caption = 'Warning'
   ClientHeight = 182
   ClientWidth = 645
-  Color = clBtnFace
+  Color = 3355443
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -40,7 +40,7 @@ object WarningForm: TWarningForm
     ParentFont = False
     TabOrder = 0
   end
-  object Button1: TButton
+  object Button1: TsButton
     Left = 562
     Top = 149
     Width = 75
@@ -50,8 +50,9 @@ object WarningForm: TWarningForm
     Enabled = False
     TabOrder = 1
     OnClick = Button1Click
+    SkinData.SkinSection = 'BUTTON'
   end
-  object Button2: TButton
+  object Button2: TsButton
     Left = 481
     Top = 149
     Width = 75
@@ -60,25 +61,39 @@ object WarningForm: TWarningForm
     Caption = 'Close'
     TabOrder = 2
     OnClick = Button2Click
+    SkinData.SkinSection = 'BUTTON'
   end
-  object OKRDBtn: TRadioButton
+  object OKRDBtn: TsRadioButton
     Left = 8
     Top = 104
-    Width = 113
-    Height = 17
+    Width = 90
+    Height = 19
     Caption = 'I understand'
     TabOrder = 3
     OnClick = OKRDBtnClick
+    SkinData.SkinSection = 'CHECKBOX'
   end
-  object NORDBtn: TRadioButton
+  object NORDBtn: TsRadioButton
     Left = 8
     Top = 127
-    Width = 113
-    Height = 17
+    Width = 124
+    Height = 19
     Caption = 'I do not understand'
     Checked = True
     TabOrder = 4
     TabStop = True
     OnClick = NORDBtnClick
+    SkinData.SkinSection = 'CHECKBOX'
+  end
+  object sSkinProvider1: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Left = 312
+    Top = 88
   end
 end

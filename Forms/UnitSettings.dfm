@@ -3,7 +3,7 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 180
+  ClientHeight = 204
   ClientWidth = 248
   Color = 3355443
   DoubleBuffered = True
@@ -22,12 +22,12 @@ object SettingsForm: TSettingsForm
   OnShow = FormShow
   DesignSize = (
     248
-    180)
+    204)
   PixelsPerInch = 96
   TextHeight = 13
   object SaveBtn: TsBitBtn
     Left = 146
-    Top = 146
+    Top = 170
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -35,11 +35,12 @@ object SettingsForm: TSettingsForm
     TabOrder = 0
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 146
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
     Top = 35
-    Width = 236
+    Width = 238
     Height = 19
     Caption = 'Don'#39't download already downloaded images'
     TabOrder = 1
@@ -50,7 +51,7 @@ object SettingsForm: TSettingsForm
   object ReverseDownloadBtn: TsCheckBox
     Left = 8
     Top = 61
-    Width = 144
+    Width = 146
     Height = 19
     Caption = 'Reverse download order'
     TabOrder = 2
@@ -60,12 +61,14 @@ object SettingsForm: TSettingsForm
   end
   object Button1: TButton
     Left = 8
-    Top = 110
+    Top = 139
     Width = 232
     Height = 25
+    Anchors = [akLeft, akRight, akBottom]
     Caption = 'Associate project files (fpd)'
     TabOrder = 3
     OnClick = Button1Click
+    ExplicitTop = 155
   end
   object ThreadNumberEdit: TsSpinEdit
     Left = 165
@@ -73,9 +76,9 @@ object SettingsForm: TSettingsForm
     Width = 75
     Height = 21
     Alignment = taCenter
-    Color = 3355443
+    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 15724527
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -102,13 +105,49 @@ object SettingsForm: TSettingsForm
   object DontLoadImgBtn: TsCheckBox
     Left = 8
     Top = 85
-    Width = 154
+    Width = 156
     Height = 19
     Caption = 'Do not load project images'
     TabOrder = 5
     SkinData.SkinSection = 'CHECKBOX'
     ImgChecked = 0
     ImgUnchecked = 0
+  end
+  object SkinList: TsComboBox
+    Left = 44
+    Top = 110
+    Width = 75
+    Height = 21
+    Alignment = taLeftJustify
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Skins:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    SkinData.SkinSection = 'COMBOBOX'
+    VerticalAlignment = taAlignTop
+    Style = csDropDownList
+    Color = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ItemIndex = 0
+    ParentFont = False
+    TabOrder = 6
+    Text = 'Dark'
+    OnChange = SkinListChange
+    Items.Strings = (
+      'Dark'
+      'Light'
+      'None')
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
@@ -118,7 +157,7 @@ object SettingsForm: TSettingsForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 112
-    Top = 88
+    Left = 160
+    Top = 40
   end
 end

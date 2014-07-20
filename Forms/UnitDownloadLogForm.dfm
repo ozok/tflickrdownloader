@@ -5,7 +5,7 @@ object DownloadLogForm: TDownloadLogForm
   Caption = 'Log'
   ClientHeight = 378
   ClientWidth = 645
-  Color = clBtnFace
+  Color = 3355443
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -41,12 +41,23 @@ object DownloadLogForm: TDownloadLogForm
       ' default browser):'
     ExplicitWidth = 383
   end
-  object LogList: TJvListView
+  object LogList: TsListView
     Left = 0
     Top = 13
     Width = 645
     Height = 325
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    SkinData.SkinSection = 'EDIT'
     Align = alClient
+    Color = 3355443
     Columns = <
       item
         Caption = 'Link'
@@ -57,18 +68,18 @@ object DownloadLogForm: TDownloadLogForm
         Caption = 'Message'
         Width = 180
       end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15724527
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     ReadOnly = True
     RowSelect = True
+    ParentFont = False
     StateImages = DownloadProgressImages
     TabOrder = 0
     ViewStyle = vsReport
     OnDblClick = LogListDblClick
-    ColumnsOrder = '0=450,1=180'
-    ExtendedColumns = <
-      item
-      end
-      item
-      end>
   end
   object DownloadProgressImages: TsAlphaImageList
     Height = 22
@@ -391,5 +402,16 @@ object DownloadLogForm: TDownloadLogForm
     Left = 248
     Top = 110
     Bitmap = {}
+  end
+  object sSkinProvider1: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Left = 312
+    Top = 184
   end
 end

@@ -27,7 +27,8 @@ uses
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Buttons, Vcl.Mask, sCustomComboEdit, Vcl.ExtCtrls,
   UnitPhotoStreamPageCountExtractor, JvExMask, JvSpin, JvToolEdit, sPanel,
-  sButton, sComboBox, sBitBtn, sEdit, sLabel;
+  sButton, sComboBox, sBitBtn, sEdit, sLabel, sSpinEdit, sMaskEdit, sToolEdit,
+  sSkinProvider;
 
 type
   TEditProjectForm = class(TForm)
@@ -40,15 +41,9 @@ type
     ImageTypeList: TsComboBox;
     GetPageCountBtn: TsButton;
     sPanel1: TsPanel;
-    EndPageEdit: TJvSpinEdit;
-    StartPageEdit: TJvSpinEdit;
-    OutputDirectoryEdit: TJvDirectoryEdit;
-    Label1: TsLabel;
-    Label2: TsLabel;
-    Label3: TsLabel;
-    Label4: TsLabel;
-    Label5: TsLabel;
-    Label6: TsLabel;
+    EndPageEdit: TsSpinEdit;
+    OutputDirectoryEdit: TsDirectoryEdit;
+    StartPageEdit: TsSpinEdit;
     procedure CancelBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GetPageCountBtnClick(Sender: TObject);

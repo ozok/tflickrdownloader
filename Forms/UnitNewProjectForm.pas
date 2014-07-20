@@ -27,25 +27,21 @@ uses
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Mask,
   sCustomComboEdit, Vcl.StdCtrls, Vcl.Buttons, UnitCommonTypes, Vcl.ExtCtrls,
   UnitPhotoStreamPageCountExtractor, Vcl.Samples.Spin, JvExMask, JvSpin, JvToolEdit,
-  sPanel, sButton, sComboBox, sBitBtn, sLabel;
+  sPanel, sButton, sComboBox, sBitBtn, sLabel, sEdit, sSkinProvider, sMaskEdit,
+  sToolEdit, sSpinEdit;
 
 type
   TNewProjectForm = class(TForm)
-    ProjectNameEdit: TLabeledEdit;
-
+    ProjectNameEdit: TsEdit;
     CancelBtn: TsBitBtn;
     SaveBtn: TsBitBtn;
+    PageLinkEdit: TsEdit;
     ImageTypeList: TsComboBox;
-    PageLinkEdit: TLabeledEdit;
     GetPageCountBtn: TsButton;
     sPanel1: TsPanel;
-    EndPageEdit: TJvSpinEdit;
-    StartPageEdit: TJvSpinEdit;
-    OutputDirectoryEdit: TJvDirectoryEdit;
-    Label1: TsLabel;
-    Label3: TsLabel;
-    Label4: TsLabel;
-    Label5: TsLabel;
+    EndPageEdit: TsSpinEdit;
+    OutputDirectoryEdit: TsDirectoryEdit;
+    StartPageEdit: TsSpinEdit;
     SaveDialog1: TSaveDialog;
     procedure SaveBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);

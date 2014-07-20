@@ -85,7 +85,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 0.5.1 Build: 780'
+        Caption = 'TFlickrDownloader 0.5.2.809'
         ExplicitLeft = 3
       end
       object Image1: TImage

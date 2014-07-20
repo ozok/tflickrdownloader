@@ -26,7 +26,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ComCtrls, Vcl.Buttons, IniFiles, Vcl.Mask, JvExMask, JvSpin, sCheckBox,
-  sBitBtn, sLabel, ShellAPI, sEdit, sSpinEdit, sSkinProvider;
+  sBitBtn, sLabel, ShellAPI, sEdit, sSpinEdit, sSkinProvider, sComboBox;
 
 type
   TSettingsForm = class(TForm)
@@ -38,6 +38,7 @@ type
     sSkinProvider1: TsSkinProvider;
     ThreadNumberEdit: TsSpinEdit;
     DontLoadImgBtn: TsCheckBox;
+    SkinList: TsComboBox;
     procedure SaveBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure Button1Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure SkinListChange(Sender: TObject);
   private
     { Private declarations }
 
@@ -112,8 +114,11 @@ begin
     DontDoubleDownloadBtn.Checked := SettingsFile.ReadBool('settings', 'double', True);
     ReverseDownloadBtn.Checked := SettingsFile.ReadBool('settings', 'reverse', False);
     DontLoadImgBtn.Checked := SettingsFile.ReadBool('settings', 'loadimg', False);
+    SkinList.ItemIndex := SettingsFile.ReadInteger('settings', 'skin', 0);
   finally
     SettingsFile.Free;
+
+    SkinListChange(Self);
   end;
 end;
 
@@ -136,8 +141,27 @@ begin
     SettingsFile.WriteBool('settings', 'double', DontDoubleDownloadBtn.Checked);
     SettingsFile.WriteBool('settings', 'reverse', ReverseDownloadBtn.Checked);
     SettingsFile.WriteBool('settings', 'loadimg', DontLoadImgBtn.Checked);
+    SettingsFile.WriteInteger('settings', 'skin', SkinList.ItemIndex);
   finally
     SettingsFile.Free;
+  end;
+end;
+
+procedure TSettingsForm.SkinListChange(Sender: TObject);
+begin
+  case SkinList.ItemIndex of
+    0:
+      begin
+        MainForm.sSkinManager1.Active := True;
+        MainForm.sSkinManager1.SkinName := 'iOS dark (internal)';
+      end;
+    1:
+      begin
+        MainForm.sSkinManager1.Active := True;
+        MainForm.sSkinManager1.SkinName := 'iOS4 (internal)';
+      end;
+    2:
+      MainForm.sSkinManager1.Active := False;
   end;
 end;
 

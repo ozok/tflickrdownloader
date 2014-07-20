@@ -1,3 +1,8 @@
+--0.5.2
+-Added: An option to disable or change skin
+-Fixed: Loading downloaded images at start up failed in some cases
+-Fixed: Some interface inconsistencies
+
 --0.5.1
 -Fixed: Loading downloaded images failed in some cases
 -Fixed: Could not preview image files whose path started with a space

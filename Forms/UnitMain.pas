@@ -32,7 +32,7 @@ uses
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfoWaitThread;
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfo;
 
 type
   TDownloadItemInfo = packed record
@@ -236,7 +236,7 @@ type
   end;
 
 const
-  BuildInt = 780;
+  BuildInt = 809;
   Portable = False;
 
 var
@@ -1070,13 +1070,14 @@ var
   LFileExt: string;
   ListItem: TListItem;
   LWidth, LHeight: Word;
-  LFileInfoThread: TFileInfoWaitThread;
+  LFIThreads: array [0..15] of TFileInfo;
   LFiles: TStringList;
   I: Integer;
   LStillRunning: Boolean;
   LProcessCount: integer;
   j: Integer;
   LOutputFiles: TStringList;
+  LFilesList: array [0..15] of TStringList;
 begin
   if Length(ProjectFilePath) < 1 then
   begin
@@ -1139,22 +1140,57 @@ begin
         begin
           LProcessCount := LFiles.Count;
         end;
+        if LProcessCount > Length(LFIThreads) then
+        begin
+          LProcessCount := Length(LFIThreads)
+        end;
 
         // create and run threads
         for I := 0 to LProcessCount-1 do
         begin
           LOutputFiles.Add(AppDataFolder + '\info' + FloatToStr(i) + '.txt');
         end;
+        for I := 0 to LProcessCount-1 do
+        begin
+          LFilesList[i] := TStringList.Create;
+        end;
+        for I := 0 to LFiles.Count-1 do
+        begin
+          LFilesList[i mod LProcessCount].Add(LFiles[i]);
+        end;
+        for I := 0 to LProcessCount-1 do
+        begin
+          LFIThreads[i] := TFileInfo.Create(LFilesList[i], LOutputFiles[i]);
+        end;
         try
-          DoneSearchingFiles := False;
-          LFileInfoThread := TFileInfoWaitThread.Create(LProcessCount, LFiles, LOutputFiles);
-          while not DoneSearchingFiles do
+          LStillRunning := False;
+          for I := 0 to LProcessCount-1 do
+          begin
+            if Assigned(LFIThreads[i]) then
+            begin
+              LStillRunning := LStillRunning or (not LFIThreads[i].Done);
+            end;
+          end;
+          while LStillRunning do
           begin
             Application.ProcessMessages;
-            Sleep(100)
+            Sleep(50);
+            LStillRunning := False;
+            for I := 0 to LProcessCount-1 do
+            begin
+              if Assigned(LFIThreads[i]) then
+              begin
+                LStillRunning := LStillRunning or (not LFIThreads[i].Done);
+              end;
+            end;
           end;
         finally
           ParseInfoFile(LProcessCount);
+          for I := 0 to LProcessCount-1 do
+          begin
+            LFIThreads[i].Free;
+            LFilesList[i].Free;
+          end;
         end;
 
       finally

@@ -5,7 +5,7 @@ object NewProjectForm: TNewProjectForm
   Caption = 'New Project'
   ClientHeight = 156
   ClientWidth = 514
-  Color = clBtnFace
+  Color = 3355443
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,73 +22,97 @@ object NewProjectForm: TNewProjectForm
     156)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TsLabel
-    Left = 8
-    Top = 65
-    Width = 82
-    Height = 13
-    Caption = 'Download folder:'
+  object sPanel1: TsPanel
+    Left = 0
+    Top = 0
+    Width = 514
+    Height = 156
+    Align = alClient
+    Caption = 'Getting page count, please wait...'
+    TabOrder = 6
+    Visible = False
+    SkinData.SkinSection = 'PANEL'
+    ExplicitLeft = 212
+    ExplicitTop = 35
+    ExplicitWidth = 185
+    ExplicitHeight = 41
   end
-  object Label3: TsLabel
-    Left = 35
-    Top = 92
-    Width = 55
-    Height = 13
-    Caption = 'Start page:'
-  end
-  object Label4: TsLabel
-    Left = 195
-    Top = 93
-    Width = 22
-    Height = 13
-    Caption = 'End:'
-  end
-  object Label5: TsLabel
-    Left = 31
-    Top = 120
-    Width = 59
-    Height = 13
-    Caption = 'Image type:'
-  end
-  object ProjectNameEdit: TLabeledEdit
+  object ProjectNameEdit: TsEdit
     Left = 96
     Top = 35
     Width = 410
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    EditLabel.Width = 67
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Project name:'
+    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    LabelPosition = lpLeft
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 0
+    Text = 'FlickrProject'
+    SkinData.SkinSection = 'EDIT'
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Project name:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
   end
   object CancelBtn: TsBitBtn
     Left = 300
-    Top = 123
+    Top = 125
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Cancel'
-    TabOrder = 8
+    TabOrder = 1
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
   object SaveBtn: TsBitBtn
     Left = 406
-    Top = 123
+    Top = 125
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Save'
-    TabOrder = 7
+    TabOrder = 2
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
+  end
+  object PageLinkEdit: TsEdit
+    Left = 96
+    Top = 8
+    Width = 410
+    Height = 21
+    Anchors = [akLeft, akTop, akRight]
+    Color = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+    SkinData.SkinSection = 'EDIT'
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Page link:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
   end
   object ImageTypeList: TsComboBox
     Left = 96
@@ -96,6 +120,8 @@ object NewProjectForm: TNewProjectForm
     Width = 90
     Height = 21
     Alignment = taLeftJustify
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Image type:'
     BoundLabel.Indent = 0
     BoundLabel.Font.Charset = DEFAULT_CHARSET
     BoundLabel.Font.Color = clWindowText
@@ -108,15 +134,15 @@ object NewProjectForm: TNewProjectForm
     SkinData.SkinSection = 'COMBOBOX'
     VerticalAlignment = taAlignTop
     Style = csDropDownList
+    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ItemIndex = 0
+    ItemIndex = -1
     ParentFont = False
-    TabOrder = 6
-    Text = 'All'
+    TabOrder = 4
     Items.Strings = (
       'All'
       'Square 75'
@@ -132,82 +158,112 @@ object NewProjectForm: TNewProjectForm
       'Large 2048'
       'Original')
   end
-  object PageLinkEdit: TLabeledEdit
-    Left = 96
-    Top = 8
-    Width = 410
-    Height = 21
-    Anchors = [akLeft, akTop, akRight]
-    EditLabel.Width = 46
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Page link:'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    LabelPosition = lpLeft
-    ParentFont = False
-    TabOrder = 0
-  end
   object GetPageCountBtn: TsButton
-    Left = 300
+    Left = 321
     Top = 89
-    Width = 206
+    Width = 185
     Height = 21
     Caption = 'Get page count'
     TabOrder = 5
     OnClick = GetPageCountBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
-  object sPanel1: TsPanel
-    Left = 177
-    Top = 42
-    Width = 185
-    Height = 41
-    Caption = 'Getting page count, please wait...'
-    TabOrder = 9
-    Visible = False
-    SkinData.SkinSection = 'PANEL'
-  end
-  object EndPageEdit: TJvSpinEdit
-    Left = 223
+  object EndPageEdit: TsSpinEdit
+    Left = 225
     Top = 89
-    Width = 75
+    Width = 90
     Height = 21
-    CheckOptions = [coCheckOnExit, coCropBeyondLimit]
-    CheckMinValue = True
     Alignment = taCenter
-    ButtonKind = bkClassic
-    Value = 1.000000000000000000
-    TabOrder = 4
+    Color = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    NumbersOnly = True
+    ParentFont = False
+    TabOrder = 7
+    SkinData.SkinSection = 'EDIT'
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'End:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    MaxValue = 0
+    MinValue = 0
+    Value = 0
   end
-  object StartPageEdit: TJvSpinEdit
-    Left = 96
-    Top = 89
-    Width = 75
-    Height = 21
-    CheckOptions = [coCheckOnExit, coCropBeyondLimit]
-    CheckMinValue = True
-    Alignment = taCenter
-    ButtonKind = bkClassic
-    Value = 1.000000000000000000
-    TabOrder = 3
-  end
-  object OutputDirectoryEdit: TJvDirectoryEdit
+  object OutputDirectoryEdit: TsDirectoryEdit
     Left = 96
     Top = 62
     Width = 410
     Height = 21
-    DialogKind = dkWin32
-    TabOrder = 2
+    AutoSize = False
+    Color = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    MaxLength = 255
+    ParentFont = False
+    TabOrder = 8
     Text = ''
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Download folder:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    SkinData.SkinSection = 'EDIT'
+    GlyphMode.Blend = 0
+    GlyphMode.Grayed = False
+    Root = 'rfDesktop'
+  end
+  object StartPageEdit: TsSpinEdit
+    Left = 96
+    Top = 89
+    Width = 90
+    Height = 21
+    Alignment = taCenter
+    Color = clWhite
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    NumbersOnly = True
+    ParentFont = False
+    TabOrder = 9
+    SkinData.SkinSection = 'EDIT'
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Start:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    MaxValue = 0
+    MinValue = 0
+    Value = 0
   end
   object SaveDialog1: TSaveDialog
-    DefaultExt = '.fpd'
-    Filter = 'Project Files|*.fpd'
-    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Title = 'Save Project File'
+    Filter = 'Project files|*.fpd'
     Left = 248
     Top = 80
   end
