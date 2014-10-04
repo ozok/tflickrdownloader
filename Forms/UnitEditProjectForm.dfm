@@ -5,7 +5,7 @@ object EditProjectForm: TEditProjectForm
   Caption = 'Edit Project'
   ClientHeight = 156
   ClientWidth = 514
-  Color = 3355443
+  Color = 13946053
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,13 +29,9 @@ object EditProjectForm: TEditProjectForm
     Height = 156
     Align = alClient
     Caption = 'Getting page count, please wait...'
-    TabOrder = 4
+    TabOrder = 9
     Visible = False
     SkinData.SkinSection = 'PANEL'
-    ExplicitLeft = 215
-    ExplicitTop = 35
-    ExplicitWidth = 185
-    ExplicitHeight = 41
   end
   object ProjectNameEdit: TsEdit
     Left = 96
@@ -72,7 +68,7 @@ object EditProjectForm: TEditProjectForm
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Cancel'
-    TabOrder = 2
+    TabOrder = 8
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -140,9 +136,10 @@ object EditProjectForm: TEditProjectForm
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ItemIndex = -1
+    ItemIndex = 0
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 6
+    Text = 'All'
     Items.Strings = (
       'All'
       'Square 75'
@@ -164,7 +161,7 @@ object EditProjectForm: TEditProjectForm
     Width = 185
     Height = 21
     Caption = 'Get page count'
-    TabOrder = 3
+    TabOrder = 5
     OnClick = GetPageCountBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -182,7 +179,8 @@ object EditProjectForm: TEditProjectForm
     Font.Style = []
     NumbersOnly = True
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 4
+    Text = '1'
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'End:'
@@ -197,7 +195,7 @@ object EditProjectForm: TEditProjectForm
     BoundLabel.UseSkinColor = True
     MaxValue = 0
     MinValue = 0
-    Value = 0
+    Value = 1
   end
   object OutputDirectoryEdit: TsDirectoryEdit
     Left = 96
@@ -213,7 +211,7 @@ object EditProjectForm: TEditProjectForm
     Font.Style = []
     MaxLength = 255
     ParentFont = False
-    TabOrder = 8
+    TabOrder = 2
     Text = ''
     BoundLabel.Active = True
     BoundLabel.Caption = 'Download folder:'
@@ -245,7 +243,8 @@ object EditProjectForm: TEditProjectForm
     Font.Style = []
     NumbersOnly = True
     ParentFont = False
-    TabOrder = 9
+    TabOrder = 3
+    Text = '1'
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Start:'
@@ -260,6 +259,17 @@ object EditProjectForm: TEditProjectForm
     BoundLabel.UseSkinColor = True
     MaxValue = 0
     MinValue = 0
-    Value = 0
+    Value = 1
+  end
+  object sSkinProvider1: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Left = 248
+    Top = 80
   end
 end

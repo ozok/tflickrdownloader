@@ -5,7 +5,7 @@ object SettingsForm: TSettingsForm
   Caption = 'Settings'
   ClientHeight = 204
   ClientWidth = 248
-  Color = 3355443
+  Color = 13946053
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -35,7 +35,6 @@ object SettingsForm: TSettingsForm
     TabOrder = 0
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 146
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -68,7 +67,6 @@ object SettingsForm: TSettingsForm
     Caption = 'Associate project files (fpd)'
     TabOrder = 3
     OnClick = Button1Click
-    ExplicitTop = 155
   end
   object ThreadNumberEdit: TsSpinEdit
     Left = 165

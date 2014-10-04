@@ -6,7 +6,7 @@ object AboutForm: TAboutForm
   Caption = 'About'
   ClientHeight = 210
   ClientWidth = 269
-  Color = 3355443
+  Color = 13946053
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -85,7 +85,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 0.5.2.809'
+        Caption = 'TFlickrDownloader 1.0.0.1028'
         ExplicitLeft = 3
       end
       object Image1: TImage

@@ -1,5 +1,6 @@
 # TFlickrDownloader
-A tool to download photostreams, albums and sets from flickr. Download several pages in parallel to improve overall download speed.
+A tool to download photostreams, albums, sets and groups from flickr. 
+Download several pages in parallel to improve overall download speed.
 
 # Binaries
 You can get setups from two different locations:

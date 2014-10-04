@@ -22,8 +22,7 @@ unit UnitExifWriter;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes, UnitCommonTypes, CCR.Exif, CCR.Exif.BaseUtils;
+uses Classes, Windows, SysUtils, Messages, StrUtils, UnitDownloader, UnitCommonTypes, CCR.Exif, CCR.Exif.BaseUtils;
 
 type
   TEWStatus = (ewDownloading, ewDone);
@@ -31,7 +30,7 @@ type
 type
   TExifWriter = class(TObject)
   private
-    FPageDownloader: TJvHttpUrlGrabber;
+    FPageDownloader: TDownloader;
     FStatus: TEWStatus;
     FImgPath: string;
     FPercentage: integer;
@@ -40,16 +39,16 @@ type
     FImgPageLink: string;
     FExifData: TExifInfo;
     FErrorMsg: TExifWriterResult;
+    FURL: string;
+    FTempFolder: string;
 
-    procedure PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-    procedure PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
     function RemoveHTMLTags(const Str: string): string;
     function StripHtmlMarkup(const source: string): string;
     function RemovePlusDate(const Str: string): string;
 
     procedure WriteExifData();
     function CorrectLink(const Link: string): string;
-    function CreateTempFileName: string;
+    procedure ParsePage;
   public
     property ExtractorStatus: TEWStatus read FStatus;
     property ErrorMessage: TExifWriterResult read FErrorMsg;
@@ -93,44 +92,30 @@ begin
 end;
 
 constructor TExifWriter.Create(const ImgPath: string; const ImgPageLink: string; const TempFolder: string);
-var
-  Def: TJvCustomUrlGrabberDefaultProperties;
 begin
   inherited Create;
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPageDownloader := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPageDownloader do
-  begin
-    OnDoneFile := PageDownloaderDoneFile;
-    OnProgress := PageDownloaderProgress;
-    OutputMode := omFile;
-    // create a random name
-    FileName := TempFolder + '\' + CreateTempFileName + '.txt';
-    Agent := '';
-  end;
+  FPageDownloader := TDownloader.Create;
 
   FStatus := ewDownloading;
   FImgPath := ImgPath;
+  FURL := ImgPageLink;
   FPercentage := 0;
   FImgPageLink := CorrectLink(ImgPageLink);
   FErrorMsg := exFailedToOpen;
-end;
-
-function TExifWriter.CreateTempFileName: string;
-var
-  LGUID: TGUID;
-begin
-  CreateGUID(LGUID);
-  Result := GUIDToString(LGUID);
+  FTempFolder := TempFolder;
 end;
 
 destructor TExifWriter.Destroy;
 begin
   inherited Destroy;
+  if FileExists(FTempFolder + '\' + ChangeFileExt(ExtractFileName(FImgPath), '_.txt')) then
+  begin
+    DeleteFile(FTempFolder + '\' + ChangeFileExt(ExtractFileName(FImgPath), '_.txt'));
+  end;
   FPageDownloader.Free;
 end;
 
-procedure TExifWriter.PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+procedure TExifWriter.ParsePage;
 // exif tags in html page.
 // thx to python I didn't need to write this all by hand.
 const
@@ -185,7 +170,7 @@ const
 {$ENDREGION}
 var
   LTmpStr: TStreamReader;
-  LLine: string;
+  LLine: AnsiString;
 begin
   FFileSize := FileSize;
   FPercentage := 100;
@@ -194,7 +179,7 @@ begin
   try
     if FileSize > 0 then
     begin
-      LTmpStr := TStreamReader.Create(FileName);
+      LTmpStr := TStreamReader.Create(FPageDownloader.OutputFileName);
       try
         while not LTmpStr.EndOfStream do
         begin
@@ -402,16 +387,8 @@ begin
       end;
     end;
   finally
-    DeleteFile(FileName);
     FStatus := ewDone;
   end;
-
-end;
-
-procedure TExifWriter.PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-begin
-  if TotalSize > 0 then
-    FPercentage := (100 * Position) div TotalSize
 end;
 
 function TExifWriter.RemoveHTMLTags(const Str: string): string;
@@ -440,8 +417,21 @@ procedure TExifWriter.Start;
 begin
   if FileExists(FImgPath) then
   begin
-    FPageDownloader.Url := ReplaceStr(FImgPageLink + 'meta/', 'http://', '');
-    FPageDownloader.Start;
+    FStatus := ewDownloading;
+    try
+      FPageDownloader.URL := FURL;
+      FPageDownloader.OutputFileName := FTempFolder + '\' + ChangeFileExt(ExtractFileName(FImgPath), '_.txt');
+      // wait until downloading is done
+      FPageDownloader.Start;
+      while FPageDownloader.Status = ds2Downloading do
+      begin
+        Sleep(50);
+      end;
+      FFileSize := FPageDownloader.FileSize;
+      ParsePage;
+    finally
+      FStatus := ewDone;
+    end;
   end
   else
   begin
@@ -453,11 +443,7 @@ procedure TExifWriter.Stop;
 begin
   if FStatus = ewDownloading then
   begin
-    while not(FPageDownloader.Status <> gsStopped) do
-    begin
-      FPageDownloader.Stop;
-      Sleep(10);
-    end;
+    FPageDownloader.Stop;
   end;
 end;
 

@@ -5,7 +5,7 @@ object NewProjectForm: TNewProjectForm
   Caption = 'New Project'
   ClientHeight = 156
   ClientWidth = 514
-  Color = 3355443
+  Color = 13946053
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,13 +29,9 @@ object NewProjectForm: TNewProjectForm
     Height = 156
     Align = alClient
     Caption = 'Getting page count, please wait...'
-    TabOrder = 6
+    TabOrder = 9
     Visible = False
     SkinData.SkinSection = 'PANEL'
-    ExplicitLeft = 212
-    ExplicitTop = 35
-    ExplicitWidth = 185
-    ExplicitHeight = 41
   end
   object ProjectNameEdit: TsEdit
     Left = 96
@@ -50,7 +46,7 @@ object NewProjectForm: TNewProjectForm
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 0
+    TabOrder = 1
     Text = 'FlickrProject'
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
@@ -72,7 +68,7 @@ object NewProjectForm: TNewProjectForm
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Cancel'
-    TabOrder = 1
+    TabOrder = 8
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -83,7 +79,7 @@ object NewProjectForm: TNewProjectForm
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Save'
-    TabOrder = 2
+    TabOrder = 7
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -100,7 +96,7 @@ object NewProjectForm: TNewProjectForm
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 0
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Page link:'
@@ -140,9 +136,10 @@ object NewProjectForm: TNewProjectForm
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ItemIndex = -1
+    ItemIndex = 0
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 6
+    Text = 'All'
     Items.Strings = (
       'All'
       'Square 75'
@@ -182,7 +179,8 @@ object NewProjectForm: TNewProjectForm
     Font.Style = []
     NumbersOnly = True
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 4
+    Text = '1'
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'End:'
@@ -197,7 +195,7 @@ object NewProjectForm: TNewProjectForm
     BoundLabel.UseSkinColor = True
     MaxValue = 0
     MinValue = 0
-    Value = 0
+    Value = 1
   end
   object OutputDirectoryEdit: TsDirectoryEdit
     Left = 96
@@ -213,7 +211,7 @@ object NewProjectForm: TNewProjectForm
     Font.Style = []
     MaxLength = 255
     ParentFont = False
-    TabOrder = 8
+    TabOrder = 2
     Text = ''
     BoundLabel.Active = True
     BoundLabel.Caption = 'Download folder:'
@@ -245,7 +243,8 @@ object NewProjectForm: TNewProjectForm
     Font.Style = []
     NumbersOnly = True
     ParentFont = False
-    TabOrder = 9
+    TabOrder = 3
+    Text = '1'
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Start:'
@@ -260,11 +259,22 @@ object NewProjectForm: TNewProjectForm
     BoundLabel.UseSkinColor = True
     MaxValue = 0
     MinValue = 0
-    Value = 0
+    Value = 1
   end
   object SaveDialog1: TSaveDialog
     Filter = 'Project files|*.fpd'
-    Left = 248
-    Top = 80
+    Left = 240
+    Top = 40
+  end
+  object sSkinProvider1: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Left = 56
+    Top = 48
   end
 end

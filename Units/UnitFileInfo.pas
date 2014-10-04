@@ -14,7 +14,6 @@ type
     FOutput: TStringList;
     FThread: TIdThreadComponent;
     FOutputFile: string;
-    FThreadHandle: THandle;
 
     function FileSizeEx(const FilePath: string): Int64;
 

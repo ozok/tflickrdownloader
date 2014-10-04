@@ -22,8 +22,7 @@ unit UnitFinalImageLinkExtractor;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes;
+uses Classes, Windows, SysUtils, Messages, StrUtils, UnitDownloader;
 
 type
   TEStatus = (esDownloading, esDone);
@@ -31,22 +30,20 @@ type
 type
   TFinalLinkExtractor = class(TObject)
   private
-    FPageDownloader: TJvHttpUrlGrabber;
+    FPageDownloader: TDownloader;
     FStatus: TEStatus;
     FURL: string;
+    FOutputFileName: string;
     FErrorMsg: string;
     FPercentage: integer;
     FPhotoLink: string;
     FFileSize: int64;
     FTitle: string;
 
-    procedure PageDownloaderDoneFile(Sender: TObject; FileName: string;
-      FileSize: Integer; Url: string);
-    procedure PageDownloaderProgress(Sender: TObject;
-      Position, TotalSize: Int64; Url: string; var Continue: Boolean);
     function RemoveHTMLTags(const Str: string): string;
     function CleanTheTitle(const Title: string):string;
     function RemoveInvalidChars(const Title: string):string;
+    procedure ParsePage;
   public
     property ExtractorStatus: TEStatus read FStatus;
     property ErrorMessage: string read FErrorMsg;
@@ -58,7 +55,7 @@ type
     constructor Create(const Url: string; const OutputFileName: string);
     destructor Destroy(); override;
 
-    procedure Start(const User: string; const Pass: string);
+    procedure Start(const TempFileName: string);
     procedure Stop();
   end;
 
@@ -71,25 +68,13 @@ begin
   Result := StringReplace(ReplaceStr(ReplaceStr(Title, '<title>All sizes | ', ''), ' | Flickr - Photo Sharing!</title>', ''), '&amp;', '&', [rfReplaceAll]);
 end;
 
-constructor TFinalLinkExtractor.Create(const Url: string;
-  const OutputFileName: string);
-var
-  Def: TJvCustomUrlGrabberDefaultProperties;
+constructor TFinalLinkExtractor.Create(const Url: string; const OutputFileName: string);
 begin
   inherited Create;
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPageDownloader := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPageDownloader do
-  begin
-    OnDoneFile := PageDownloaderDoneFile;
-    OnProgress := PageDownloaderProgress;
-    OutputMode := omFile;
-    FileName := OutputFileName;
-    Agent := '';
-  end;
-
+  FPageDownloader := TDownloader.Create;
   FStatus := esDownloading;
   FURL := Url;
+  FOutputFileName := OutputFileName;
   FErrorMsg := '';
   FPercentage := 0;
   FTitle := '';
@@ -101,9 +86,8 @@ begin
   FPageDownloader.Free;
 end;
 
-procedure TFinalLinkExtractor.PageDownloaderDoneFile(Sender: TObject;
-  FileName: string; FileSize: Integer; Url: string);
-const
+procedure TFinalLinkExtractor.ParsePage;
+  const
   SpaceballSTR = '<div class="spaceball"';
   DownloadBtnSTR = '<dt>Download</dt>';
   TITLESTR = '<title>';
@@ -116,9 +100,9 @@ begin
 
   FStatus := esDownloading;
   try
-    if FileExists(FileName) then
+    if FileExists(FPageDownloader.OutputFileName) then
     begin
-      LTmpStr := TStreamReader.Create(FileName, True);
+      LTmpStr := TStreamReader.Create(FPageDownloader.OutputFileName);
       try
         while not LTmpStr.EndOfStream do
         begin
@@ -141,21 +125,13 @@ begin
         end;
       finally
         LTmpStr.Close;
-        FreeAndNil(LTmpStr);
+        LTmpStr.Free;
       end;
     end;
   finally
     FPhotoLink := Trim(FPhotoLink);
     FStatus := esDone;
   end;
-
-end;
-
-procedure TFinalLinkExtractor.PageDownloaderProgress(Sender: TObject;
-  Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-begin
-  if TotalSize > 0 then
-    FPercentage := (100 * Position) div TotalSize
 end;
 
 function TFinalLinkExtractor.RemoveHTMLTags(const Str: string): string;
@@ -164,8 +140,8 @@ begin
   Result := ReplaceStr(Result, '">', '');
   Result := ReplaceStr(Result, '<img src="', '');
   Result := ReplaceStr(Result, '<a href="', '');
-  Result := ReplaceStr(Result , 'https//', '');
-  Result := ReplaceStr(Result , 'https://', '');
+//  Result := ReplaceStr(Result , 'https//', '');
+//  Result := ReplaceStr(Result , 'https://', '');
   Result := Trim(Result)
 end;
 
@@ -188,23 +164,34 @@ begin
   Result := Tmp;
 end;
 
-procedure TFinalLinkExtractor.Start(const User: string; const Pass: string);
+procedure TFinalLinkExtractor.Start(const TempFileName: string);
 begin
-  FPageDownloader.UserName := User;
-  FPageDownloader.Password := Pass;
-  FPageDownloader.Url := FURL;
-  FPageDownloader.Start;
+  FStatus := esDownloading;
+  try
+    FPageDownloader.URL := FURL;
+    if FileExists(TempFileName) then
+    begin
+      DeleteFile(TempFileName);
+    end;
+    FPageDownloader.OutputFileName := TempFileName;
+    FPageDownloader.Start;  
+    // wait until downloading is done
+    while FPageDownloader.Status = ds2Downloading do
+    begin
+      Sleep(50);
+    end;
+    FFileSize := FPageDownloader.FileSize;
+    ParsePage;
+  finally
+    FStatus := esDone;
+  end;
 end;
 
 procedure TFinalLinkExtractor.Stop;
 begin
   if FStatus = esDownloading then
   begin
-    while not (FPageDownloader.Status <> gsStopped) do
-    begin
-      FPageDownloader.Stop;
-      Sleep(10);
-    end;
+    FPageDownloader.Stop;
   end;
 end;
 

@@ -22,8 +22,7 @@ unit UnitPhotoDownloader;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes, UnitExifWriter, UnitCommonTypes,
+uses Classes, Windows, SysUtils, Messages, StrUtils, UnitDownloader, UnitCommonTypes,
   Dialogs, UnitImageTypeExtractor;
 
 type
@@ -32,7 +31,7 @@ type
 type
   TPhotoDownloader = class(TObject)
   private
-    FPageDownloader: TJvHttpUrlGrabber;
+    FPageDownloader: TDownloader;
     FStatus: TPDStatus;
     FURL: string;
     FErrorMsg: TErrorMessages;
@@ -47,14 +46,12 @@ type
     FPageIndex: integer;
     FImageType: string;
 
-    procedure PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-    procedure PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-    procedure PageDownloaderError(Sender: TObject; ErrorMsg: string);
     function URLToFileName: string;
 
     function IsFileEmpty(const FilePath: string): Boolean;
     function IsTimedOut(const FilePath: string): Boolean;
     function GetFileSize(const FilePath: string): int64;
+    procedure ParsePage;
   public
     property DownloaderStatus: TPDStatus read FStatus;
     property ErrorMessage: TErrorMessages read FErrorMsg;
@@ -83,27 +80,21 @@ implementation
 
 constructor TPhotoDownloader.Create(const Url: string; const OutputFolder: string);
 var
-  Def: TJvCustomUrlGrabberDefaultProperties;
+  LOutputFile: string;
 begin
   inherited Create;
-
+  FPageDownloader := TDownloader.Create;
   FStatus := pdsDownloading;
   FURL := Url;
   FErrorMsg := emNotStarted;
   FPercentage := 0;
-
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPageDownloader := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPageDownloader do
+  LOutputFile := OutputFolder + '\' + URLToFileName;
+  if Length(LOutputFile) > MAX_PATH then
   begin
-    OnDoneFile := PageDownloaderDoneFile;
-    OnProgress := PageDownloaderProgress;
-    OnError := PageDownloaderError;
-    OutputMode := omFile;
-    FileName := OutputFolder + '\' + URLToFileName;
-    FOutputFileName := FileName;
-    Agent := '';
+    LOutputFile := Copy(LOutputFile, 1, MAX_PATH - 1);
+    LOutputFile := ChangeFileExt(LOutputFile, '.jpg');
   end;
+  FOutputFileName := LOutputFile;
   FOutputFolder := OutputFolder;
 end;
 
@@ -118,14 +109,12 @@ var
   FS: TFileStream;
 begin
   Result := 0;
-
   FS := TFileStream.Create(FilePath, fmOpenRead or fmShareDenyWrite);
   try
     Result := FS.Size;
   finally
     FS.Free;
   end;
-
 end;
 
 function TPhotoDownloader.IsFileEmpty(const FilePath: string): Boolean;
@@ -174,23 +163,21 @@ begin
   end;
 end;
 
-procedure TPhotoDownloader.PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+procedure TPhotoDownloader.ParsePage;
 var
-  LExifWriter: TExifWriter;
   LFileExt: string;
   LImageTypeEx: TImageType;
 begin
-  FImgSize := FileSize;
   FPercentage := 100;
-  if FileExists(FileName) then
+  if FileExists(FOutputFileName) then
   begin
-    FImageType := ExtractFileExt(FileName);
+    FImageType := ExtractFileExt(FOutputFileName);
 
-    if IsFileEmpty(FileName) or (FileSize = 0) then
+    if IsFileEmpty(FOutputFileName) or (FImgSize = 0) then
     begin
       FErrorMsg := emEmptyFile;
     end
-    else if IsTimedOut(FileName) then
+    else if IsTimedOut(FOutputFileName) then
     begin
       FErrorMsg := emConnectionTimedOut;
     end
@@ -199,13 +186,13 @@ begin
       FErrorMsg := emOK;
     end;
     // try to get image's real type
-    LImageTypeEx := TImageType.Create(FileName);
+    LImageTypeEx := TImageType.Create(FOutputFileName);
     try
       LFileExt := LImageTypeEx.ImageType;
       if Length(LFileExt) > 0 then
       begin
         FImageType := LFileExt;
-        ChangeFileExt(FileName, LFileExt);
+        ChangeFileExt(FOutputFileName, LFileExt);
       end;
     finally
       LImageTypeEx.Free;
@@ -218,32 +205,15 @@ begin
   FStatus := pdsDone;
 end;
 
-procedure TPhotoDownloader.PageDownloaderError(Sender: TObject; ErrorMsg: string);
-begin
-  FErrorMsg := ErrorMessage;
-end;
-
-procedure TPhotoDownloader.PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-begin
-  if TotalSize > 0 then
-  begin
-    FPercentage := (100 * Position) div TotalSize;
-    FTotalSize := TotalSize;
-    FPosition := Position;
-  end;
-end;
-
 procedure TPhotoDownloader.SetOutputName(const Name: string);
 begin
   if Length(Name) > 0 then
   begin
-    FPageDownloader.FileName := FOutputFolder + '\' + Name + '_' + URLToFileName;
-    FOutputFileName := FPageDownloader.FileName;
+    FOutputFileName := FOutputFolder + '\' + Name + '_' + URLToFileName;
   end
   else
   begin
-    FPageDownloader.FileName := FOutputFolder + '\' + URLToFileName;
-    FOutputFileName := FPageDownloader.FileName;
+    FOutputFileName := FOutputFolder + '\' + URLToFileName;
   end;
 end;
 
@@ -256,14 +226,42 @@ begin
     // download if file doesn't exist
     if not FileExists(FOutputFileName) then
     begin
-      FPageDownloader.Start;
+      FStatus := pdsDownloading;
+      try
+        FPageDownloader.URL := FURL;
+        FPageDownloader.OutputFileName := FOutputFileName;
+        // wait until downloading is done
+        FPageDownloader.Start;
+        while FPageDownloader.Status = ds2Downloading do
+        begin
+          Sleep(50);
+        end;
+        FImgSize := FPageDownloader.FileSize;
+        ParsePage;
+      finally
+        FStatus := pdsDone;
+      end;
     end
     else
     begin
       // download again if timed out or empty
       if IsTimedOut(FOutputFileName) or IsFileEmpty(FOutputFileName) then
       begin
-        FPageDownloader.Start;
+        FStatus := pdsDownloading;
+        try
+          FPageDownloader.URL := FURL;
+          FPageDownloader.OutputFileName := FOutputFileName;
+          FPageDownloader.Start;
+          // wait until downloading is done
+          while FPageDownloader.Status = ds2Downloading do
+          begin
+            Sleep(50);
+          end;
+          FImgSize := FPageDownloader.FileSize;
+          ParsePage;
+        finally
+          FStatus := pdsDone;
+        end;
       end
       else
       begin
@@ -276,7 +274,21 @@ begin
   else
   begin
     // download anyways
-    FPageDownloader.Start;
+    FStatus := pdsDownloading;
+    try
+      FPageDownloader.URL := FURL;
+      FPageDownloader.OutputFileName := FOutputFileName;
+      FPageDownloader.Start;
+      // wait until downloading is done
+      while FPageDownloader.Status = ds2Downloading do
+      begin
+        Sleep(50);
+      end;
+      FImgSize := FPageDownloader.FileSize;
+      ParsePage;
+    finally
+      FStatus := pdsDone;
+    end;
   end;
 end;
 
@@ -284,11 +296,7 @@ procedure TPhotoDownloader.Stop;
 begin
   if FStatus = pdsDownloading then
   begin
-    while not(FPageDownloader.Status <> gsStopped) do
-    begin
-      FPageDownloader.Stop;
-      Sleep(10);
-    end;
+    FPageDownloader.Stop;
   end;
 end;
 
@@ -300,6 +308,10 @@ begin
   LURL := FURL;
   LURL := StringReplace(LURL, '/', '\', [rfReplaceAll]);
   Result := ChangeFileExt(ExtractFileName(LURL), '.jpg');
+  if Length(Result) > MAX_PATH then
+  begin
+    Result := ExtractFileDir(Result) + ChangeFileExt(Copy(Result, 1, MAX_PATH - 1), '.jpg');
+  end;
 end;
 
 end.

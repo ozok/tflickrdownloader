@@ -22,8 +22,7 @@ unit UnitImagePagesExtractor;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes;
+uses Classes, Windows, SysUtils, Messages, StrUtils, System.Types, UnitDownloader, dialogs;
 
 type
   TIPEStatus = (iesDownloading, iesDone, iesError);
@@ -31,7 +30,7 @@ type
 type
   TImagePagesExtractor = class(TObject)
   private
-    FPageDownloader: TJvHttpUrlGrabber;
+    FPageDownloader: TDownloader;
     FStatus: TIPEStatus;
     FURL: string;
     FErrorMsg: string;
@@ -40,19 +39,15 @@ type
     FFileSize: int64;
     FStatusText: string;
     FGroup: Boolean;
+    FTempFile: string;
     FGroupLinks: TStringList;
-
-    procedure PageDownloaderDoneFile(Sender: TObject; FileName: string;
-      FileSize: Integer; Url: string);
-    procedure PageDownloaderProgress(Sender: TObject;
-      Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-    procedure PageDownloaderError(Sender: TObject; ErrorMsg: string);
 
     function RemoveHTMLTags(const Str: string): string;
     function RemoveWith(const Str: string):string;
     procedure WriteJSONData(const JSONStr: string);
     function IsLinkAlreadyAdded(const Link: string):Boolean;
     function GetGroupLink(const Str: string):string;
+    procedure ParsePage;
   public
     property ExtractorStatus: TIPEStatus read FStatus;
     property ErrorMessage: string read FErrorMsg;
@@ -72,26 +67,14 @@ implementation
 { TImagePagesExtractor }
 
 constructor TImagePagesExtractor.Create(const Url: string; const TempFile: string; const OutputFilePath: string);
-var
-  Def: TJvCustomUrlGrabberDefaultProperties;
 begin
   inherited Create;
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPageDownloader := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPageDownloader do
-  begin
-    OnDoneFile := PageDownloaderDoneFile;
-    OnProgress := PageDownloaderProgress;
-    OnError := PageDownloaderError;
-    OutputMode := omFile;
-    FileName := TempFile;
-    Agent := '';
-  end;
-
+  FPageDownloader := TDownloader.Create;
   // decide if link belongs to a group
   FGroup := ContainsText(Url, '/groups/');
 
   FOutputFilePath := OutputFilePath;
+  FTempFile := TempFile;
   FStatus := iesDownloading;
   FURL := RemoveWith(Url);
   FErrorMsg := '';
@@ -108,18 +91,18 @@ end;
 
 function TImagePagesExtractor.GetGroupLink(const Str: string): string;
 const
-  First = '<a data-track="photo-click" href="';
+//  EndStr = '" title="';
+  EndStr = 'in/pool';
 var
   LLine: string;
   LPos: Integer;
 begin
-  Result := Str;
   LLine := Trim(Str);
-  LLine := StringReplace(LLine, First, '', [rfReplaceAll]);
-  LPos := PosEx('"', LLine);
+  Result := LLine;
+  LPos := Pos(EndStr, Str);
   if LPos > 0 then
   begin
-    Result := copy(LLine, 1, LPos);
+    Result := copy(LLine, 1, LPos-1);
   end;
 end;
 
@@ -144,17 +127,19 @@ begin
   end;
 end;
 
-procedure TImagePagesExtractor.PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+
+procedure TImagePagesExtractor.ParsePage;
 const
   PhotoContainerStr = '<span class="photo_container pc_ju">';
-  GroupContainerStr = '<div id="pool-photos" class="ju  photo-display-container clearfix"';
-  GroupLinkStr = '<div class="pool-photo photo-display-item"';
+  GroupContainerStr = '<div id="photo-display-container">';
+  GroupLinkStartStr = 'href="/photos/';
   YLIST = 'Y.listData = ';
 var
   LTmpStr: TStreamReader;
   LStreamWriter: TStreamWriter;
   LLine: string;
   LJSONStr: string;
+  I: Integer;
 //  LTmpList: TStringList;
 //  LLine2: string;
 //  LGroupLinkLine: string;
@@ -165,39 +150,50 @@ begin
 
   FStatus := iesDownloading;
   try
-    if FileExists(FileName) then
+    if FileExists(FTempFile) then
     begin
-      if FGroup then
-      begin
-        // todo: group support
-      end
-      else
-      begin
-        LTmpStr := TStreamReader.Create(FileName, True);
-        LStreamWriter := TStreamWriter.Create(FOutputFilePath, False);
-        try
-          // normal stream
-          while not LTmpStr.EndOfStream do
+      LTmpStr := TStreamReader.Create(FTempFile, True);
+      LStreamWriter := TStreamWriter.Create(FOutputFilePath, False);
+      try
+        // normal stream
+        while not LTmpStr.EndOfStream do
+        begin
+          LLine := Trim(LTmpStr.ReadLine);
+          if FGroup then
           begin
-            LLine := Trim(LTmpStr.ReadLine);
+            if ContainsText(LLine, GroupLinkStartStr) then
+            begin
+              FGroupLinks.Clear;
+              FGroupLinks.LineBreak := GroupLinkStartStr;
+              FGroupLinks.Text := LLine;
+              for I := 0 to FGroupLinks.Count-1 do
+              begin
+                if ContainsText(FGroupLinks[i], '" title="') and (not ContainsText(FGroupLinks[i], 'owner')) then
+                begin
+                  LStreamWriter.WriteLine('https://www.flickr.com/photos/' + RemoveHTMLTags(GetGroupLink(FGroupLinks[i])));
+                end;
+              end;
+            end;
+          end
+          else
+          begin
             if Copy(LLine, 1, Length(PhotoContainerStr)) = PhotoContainerStr then
             begin
-              LStreamWriter.WriteLine('www.flickr.com' + RemoveHTMLTags(LTmpStr.ReadLine));
+              LStreamWriter.WriteLine('https://www.flickr.com' + RemoveHTMLTags(LTmpStr.ReadLine));
             end
             else if Copy(LLine, 1, Length(YLIST)) = YLIST then
             begin
               LJSONStr := ReplaceStr(LLine, YLIST, '');
             end
           end;
-        finally
-          LStreamWriter.Flush;
-          LStreamWriter.Close;
-          LTmpStr.Close;
-          FreeAndNil(LTmpStr);
-          FreeAndNil(LStreamWriter);
         end;
+      finally
+        LStreamWriter.Flush;
+        LStreamWriter.Close;
+        LTmpStr.Close;
+        FreeAndNil(LTmpStr);
+        FreeAndNil(LStreamWriter);
       end;
-
     end;
 
     // try to extract data from json
@@ -208,19 +204,6 @@ begin
   finally
     FStatus := iesDone;
   end;
-
-end;
-
-procedure TImagePagesExtractor.PageDownloaderError(Sender: TObject; ErrorMsg: string);
-begin
-  Self.Stop;
-  FErrorMsg := ErrorMsg;
-end;
-
-procedure TImagePagesExtractor.PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-begin
-  if TotalSize > 0 then
-    FPercentage := (100 * Position) div TotalSize
 end;
 
 function TImagePagesExtractor.RemoveHTMLTags(const Str: string): string;
@@ -242,7 +225,6 @@ end;
 function TImagePagesExtractor.RemoveWith(const Str: string): string;
 const
   LWITHSTR = 'with';
-
 var
   LWithPos: integer;
 begin
@@ -251,25 +233,33 @@ begin
   if LWithPos > 0 then
   begin
     Result := Trim(Copy(Str, 1, LWithPos-1));
-
   end;
 end;
 
 procedure TImagePagesExtractor.Start();
 begin
-  FPageDownloader.Url := FURL;
-  FPageDownloader.Start;
+  FStatus := iesDownloading;
+  try
+    FPageDownloader.URL := FURL;
+    FPageDownloader.OutputFileName := FTempFile;
+    // wait until downloading is done
+    FPageDownloader.Start;
+    while FPageDownloader.Status = ds2Downloading do
+    begin
+      Sleep(50);
+    end;
+    FFileSize := FPageDownloader.FileSize;
+    ParsePage;
+  finally
+    FStatus := iesDone;
+  end;
 end;
 
 procedure TImagePagesExtractor.Stop;
 begin
   if FStatus = iesDownloading then
   begin
-    while not (FPageDownloader.Status <> gsStopped) do
-    begin
-      FPageDownloader.Stop;
-      Sleep(10);
-    end;
+    FPageDownloader.Stop;
   end;
 end;
 
@@ -291,7 +281,7 @@ begin
     begin
       if 'photo_url' = LTmpLst[i] then
       begin
-        LLink := 'www.flickr.com' + StringReplace(LTmpLst[i+2], '\', '', [rfReplaceAll]);
+        LLink := 'https://www.flickr.com' + StringReplace(LTmpLst[i+2], '\', '', [rfReplaceAll]);
         if not IsLinkAlreadyAdded(LLink) then
         begin
           LStreamWriter := TStreamWriter.Create(FOutputFilePath, True);

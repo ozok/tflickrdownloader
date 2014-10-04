@@ -43,6 +43,7 @@ type
     OutputDirectoryEdit: TsDirectoryEdit;
     StartPageEdit: TsSpinEdit;
     SaveDialog1: TSaveDialog;
+    sSkinProvider1: TsSkinProvider;
     procedure SaveBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GetPageCountBtnClick(Sender: TObject);
@@ -103,7 +104,7 @@ begin
     Self.Enabled := False;
     try
       // remove https
-      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
+      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'http://', 'https://', [rfIgnoreCase]);
 
       LPCE := TPhotoStreamPageCountExtractor.Create(PageLinkEdit.Text, MainForm.TempFolder + '\pagecount.txt');
       try
@@ -111,9 +112,10 @@ begin
         while LPCE.ExtractorStatus = pceDownloading do
         begin
           Application.ProcessMessages;
-          Sleep(10);
+          Sleep(50);
         end;
         EndPageEdit.Value := LPCE.LastPage;
+        StartPageEdit.Text := '1';
       finally
         LPCE.Free;
       end;
@@ -169,7 +171,7 @@ begin
         end;
       end;
       // remove https
-      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
+      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'http://', 'https://', [rfIgnoreCase]);
 
       if (Length(StartPageEdit.Text) > 0) and (Length(EndPageEdit.Text) > 0) then
       begin
@@ -182,22 +184,22 @@ begin
             LProjectFile.Add(EndPageEdit.Text);
             LProjectFile.Add(FloatToStr(ImageTypeList.ItemIndex));
             LProjectFile.Add(OutputDirectoryEdit.Text);
-            LProjectFile.Add(StringReplace(PageLinkEdit.Text, 'https://', 'http://', []));
+            LProjectFile.Add(StringReplace(PageLinkEdit.Text, 'http://', 'https://', []));
 
             if SaveDialog1.Execute then
             begin
-              LProjectFile.SaveToFile(ExtractFileDir(SaveDialog1.FileName) + '\' + RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName)), TEncoding.UTF8);
+              LProjectFile.SaveToFile(ExtractFileDir(SaveDialog1.FileName) + '\' + ChangeFileExt(RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName)), '.fpd'), TEncoding.UTF8);
             end;
           finally
             FreeAndNil(LProjectFile);
 
             MainForm.CloseProjectBtnClick(Self);
             // update main form
-            if MainForm.LoadProject(ExtractFileDir(SaveDialog1.FileName) + '\' + RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName)), LProjectInfo) then
+            if MainForm.LoadProject(ExtractFileDir(SaveDialog1.FileName) + '\' + ChangeFileExt(RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName)), '.fpd'), LProjectInfo) then
             begin
               MainForm.ProjectInfo := LProjectInfo;
               MainForm.ProjectLoadedStatus;
-              MainForm.ProjectFilePath := ExtractFileDir(SaveDialog1.FileName) + '\' + RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName));
+              MainForm.ProjectFilePath := ExtractFileDir(SaveDialog1.FileName) + '\' + ChangeFileExt(RemoveInvalidChars(ExtractFileName(SaveDialog1.FileName)), '.fpd');
             end
             else
             begin

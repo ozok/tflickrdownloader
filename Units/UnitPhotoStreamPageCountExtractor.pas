@@ -22,8 +22,7 @@ unit UnitPhotoStreamPageCountExtractor;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, JvComponentBase,
-  JvUrlListGrabber, JvUrlGrabbers, JvTypes, Dialogs;
+uses Classes, Windows, SysUtils, Messages, StrUtils, UnitDownloader, IdComponent, IdThreadComponent, IdThread;
 
 type
   TPCEStatus = (pceDownloading, pceDone);
@@ -31,17 +30,22 @@ type
 type
   TPhotoStreamPageCountExtractor = class(TObject)
   private
-    FPageDownloader: TJvHttpUrlGrabber;
+    FThread: TIdThreadComponent;
+    FPageDownloader: TDownloader;
     FStatus: TPCEStatus;
     FURL: string;
     FErrorMsg: string;
     FPercentage: integer;
     FLastPage: integer;
+    FTempFile: string;
 
-    procedure PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-    procedure PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
+    procedure ThreadRun(Sender: TIdThreadComponent);
+    procedure ThreadStopped(Sender: TIdThreadComponent);
+    procedure ThreadTerminate(Sender: TIdThreadComponent);
+
     function RemoveWith(const Str: string): string;
     function GetLastPage(const Str: string): Integer;
+    procedure ParsePage;
   public
     property ExtractorStatus: TPCEStatus read FStatus;
     property ErrorMessage: string read FErrorMsg;
@@ -51,7 +55,7 @@ type
     constructor Create(const Url: string; const TempFile: string);
     destructor Destroy(); override;
 
-    procedure Start();
+    procedure Start;
     procedure Stop();
   end;
 
@@ -60,23 +64,20 @@ implementation
 { TPhotoStreamPageCountExtractor }
 
 constructor TPhotoStreamPageCountExtractor.Create(const Url: string; const TempFile: string);
-var
-  Def: TJvCustomUrlGrabberDefaultProperties;
 begin
   inherited Create;
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPageDownloader := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPageDownloader do
-  begin
-    OnDoneFile := PageDownloaderDoneFile;
-    OnProgress := PageDownloaderProgress;
-    OutputMode := omFile;
-    FileName := TempFile;
-    Agent := '';
-  end;
+  FPageDownloader := TDownloader.Create;
+
+  FThread := TIdThreadComponent.Create;
+  FThread.Priority := tpIdle;
+  FThread.StopMode := smTerminate;
+  FThread.OnRun := ThreadRun;
+  FThread.OnStopped := ThreadStopped;
+  FThread.OnTerminate := ThreadTerminate;
 
   FStatus := pceDownloading;
   FURL := RemoveWith(Url);
+  FTempFile := TempFile;
   FErrorMsg := '';
   FPercentage := 0;
   FLastPage := 1;
@@ -85,6 +86,7 @@ end;
 destructor TPhotoStreamPageCountExtractor.Destroy;
 begin
   inherited Destroy;
+  FThread.Free;
   FPageDownloader.Free;
 end;
 
@@ -108,7 +110,7 @@ begin
   end;
 end;
 
-procedure TPhotoStreamPageCountExtractor.PageDownloaderDoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+procedure TPhotoStreamPageCountExtractor.ParsePage;
 const
   PageSpanStartStr = '<span class="pages">';
   PageSpanEndStr = '<a class="rapidnofollow"';
@@ -124,9 +126,9 @@ begin
   FStatus := pceDownloading;
   LFoundPageLinks := TStringList.Create;
   try
-    if FileExists(FileName) then
+    if FileExists(FPageDownloader.OutputFileName) then
     begin
-      LTmpStr := TStreamReader.Create(FileName, True);
+      LTmpStr := TStreamReader.Create(FPageDownloader.OutputFileName, True);
       try
         while not LTmpStr.EndOfStream do
         begin
@@ -159,13 +161,6 @@ begin
     LFoundPageLinks.Free;
     FStatus := pceDone;
   end;
-
-end;
-
-procedure TPhotoStreamPageCountExtractor.PageDownloaderProgress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
-begin
-  if TotalSize > 0 then
-    FPercentage := (100 * Position) div TotalSize
 end;
 
 function TPhotoStreamPageCountExtractor.RemoveWith(const Str: string): string;
@@ -182,22 +177,47 @@ begin
   end;
 end;
 
-procedure TPhotoStreamPageCountExtractor.Start();
+procedure TPhotoStreamPageCountExtractor.Start;
 begin
-  FPageDownloader.Url := FURL;
-  FPageDownloader.Start;
+  FStatus := pceDownloading;
+  FThread.Start;
 end;
 
 procedure TPhotoStreamPageCountExtractor.Stop;
 begin
   if FStatus = pceDownloading then
   begin
-    while not(FPageDownloader.Status <> gsStopped) do
-    begin
-      FPageDownloader.Stop;
-      Sleep(10);
-    end;
+    FThread.Terminate;
   end;
+end;
+
+procedure TPhotoStreamPageCountExtractor.ThreadRun(Sender: TIdThreadComponent);
+begin
+  FStatus := pceDownloading;
+  try
+    FPageDownloader.URL := FURL;
+    FPageDownloader.OutputFileName := FTempFile;
+    FPageDownloader.Start;
+    // wait until downloading is done
+    while FPageDownloader.Status = ds2Downloading do
+    begin
+      Sleep(50);
+    end;
+    ParsePage;
+  finally
+    FStatus := pceDone;
+  end;
+  FThread.Terminate;
+end;
+
+procedure TPhotoStreamPageCountExtractor.ThreadStopped(Sender: TIdThreadComponent);
+begin
+  FStatus := pceDone;
+end;
+
+procedure TPhotoStreamPageCountExtractor.ThreadTerminate(Sender: TIdThreadComponent);
+begin
+  FStatus := pceDone;
 end;
 
 end.

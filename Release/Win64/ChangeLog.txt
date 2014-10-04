@@ -1,3 +1,14 @@
+--1.0
+-Added: Support for flickr groups
+-Added: Support for https links
+-Added: A button to visit opened project's web page
+-Fixed: Downloaded image count was wrong if "Do not load project images" was selected
+-Fixed: Program couldn't end download threads properly on exit
+-Fixed: Saved project file could have a different extension
+-Fixed: Couldn't download due to last changes in flickr
+-Fixed: Stopping didn't stop all threads
+-Fixed: Many memory leaks
+
 --0.5.2
 -Added: An option to disable or change skin
 -Fixed: Loading downloaded images at start up failed in some cases

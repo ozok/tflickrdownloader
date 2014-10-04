@@ -430,8 +430,8 @@ type
   TExifExposureMode = (exTagMissing = -1, exAuto, exManual, exAutoBracket);
   TExifExposureProgram = (eeTagMissing = -1, eeUndefined, eeManual, eeNormal, eeAperturePriority, eeShutterPriority, eeCreative, eeAction, eePortrait, eeLandscape);
   TExifGainControl = (egTagMissing = -1, egNone, egLowGainUp, egHighGainUp, egLowGainDown, egHighGainDown);
-  TExifLightSource = (elTagMissing = -1, elUnknown, elDaylight, elFluorescent, elTungsten, elFlash, elFineWeather = 9, elCloudyWeather, elShade, elDaylightFluorescent, elDayWhiteFluorescent,
-    elCoolWhiteFluorescent, elWhiteFluorescent, elStandardLightA = 17, elStandardLightB, elStandardLightC, elD55, elD65, elD75, elD50, elISOStudioTungsten, elOther = 255);
+  TExifLightSource = (elTagMissing = -1, elUnknown, elDaylight, elFluorescent, elTungsten, elFlash, elFineWeather = 9, elCloudyWeather, elShade, elDaylightFluorescent, elDayWhiteFluorescent, elCoolWhiteFluorescent, elWhiteFluorescent,
+    elStandardLightA = 17, elStandardLightB, elStandardLightC, elD55, elD65, elD75, elD50, elISOStudioTungsten, elOther = 255);
   TExifMeteringMode = (emTagMissing = -1, emUnknown, emAverage, emCenterWeightedAverage, emSpot, emMultiSpot, emPattern, emPartial);
   TExifRendering = (erTagMissing = -1, erNormal, erCustom);
   TExifSaturation = (euTagMissing = -1, euNormal, euLow, euHigh);
@@ -1375,8 +1375,8 @@ function IsKnownExifTagInMainIFD(ID: TTiffTagID; DataType: TTiffDataType): Boole
 begin
   Result := False;
   case ID of
-    ttImageDescription, ttMake, ttModel, ttOrientation, ttXResolution, ttYResolution, ttResolutionUnit, ttSoftware, ttDateTime, ttArtist, ttWhitePoint, ttPrimaryChromaticities, ttYCbCrCoefficients,
-      ttYCbCrPositioning, ttReferenceBlackWhite, ttCopyright, ttIPTC, ttExifOffset, ttGPSOffset, ttPrintIM:
+    ttImageDescription, ttMake, ttModel, ttOrientation, ttXResolution, ttYResolution, ttResolutionUnit, ttSoftware, ttDateTime, ttArtist, ttWhitePoint, ttPrimaryChromaticities, ttYCbCrCoefficients, ttYCbCrPositioning, ttReferenceBlackWhite,
+      ttCopyright, ttIPTC, ttExifOffset, ttGPSOffset, ttPrintIM:
       Result := True;
     ttWindowsTitle, ttWindowsComments, ttWindowsAuthor, ttWindowsKeywords, ttWindowsSubject, ttWindowsRating, ttWindowsPadding:
       if DataType = tdByte then
@@ -1608,8 +1608,8 @@ function TryExifStringToDateTime(const S: string; var DateTime: TDateTime): Bool
 var
   Year, Month, Day, Hour, Min, Sec: Integer;
 begin // '2007:09:02 02:30:49'
-  Result := (Length(S) = 19) and (S[5] = ':') and (S[8] = ':') and TryStrToInt(Copy(S, 1, 4), Year) and TryStrToInt(Copy(S, 6, 2), Month) and TryStrToInt(Copy(S, 9, 2), Day) and
-    TryStrToInt(Copy(S, 12, 2), Hour) and TryStrToInt(Copy(S, 15, 2), Min) and TryStrToInt(Copy(S, 18, 2), Sec) and TryEncodeDateTime(Year, Month, Day, Hour, Min, Sec, 0, DateTime);
+  Result := (Length(S) = 19) and (S[5] = ':') and (S[8] = ':') and TryStrToInt(Copy(S, 1, 4), Year) and TryStrToInt(Copy(S, 6, 2), Month) and TryStrToInt(Copy(S, 9, 2), Day) and TryStrToInt(Copy(S, 12, 2), Hour) and
+    TryStrToInt(Copy(S, 15, 2), Min) and TryStrToInt(Copy(S, 18, 2), Sec) and TryEncodeDateTime(Year, Month, Day, Hour, Min, Sec, 0, DateTime);
 end;
 
 { TExifTag }
@@ -3935,7 +3935,7 @@ end;
 function TCustomExifData.HasThumbnail: Boolean;
 begin
   Result := false;
-//  Result := not IsGraphicEmpty(FThumbnailOrNil);
+  // Result := not IsGraphicEmpty(FThumbnailOrNil);
 end;
 
 function TCustomExifData.LoadFromGraphic(Stream: TStream): Boolean;
@@ -5897,8 +5897,7 @@ procedure TExifDataPatcher.GetImage<T>(Dest: T);
         if PreserveMakerNotePos then // if Windows has moved it, put the maker note back, else keep it where it is
         begin
           MakerNoteDataOffset := MakerNoteTag.OriginalDataOffset;
-          if Find(ttOffsetSchema, MakerNoteOffsetTag) and (MakerNoteOffsetTag.DataType = tdLongInt) and (MakerNoteOffsetTag.ElementCount = 1) and
-            (MakerNoteDataOffset - PLongInt(MakerNoteOffsetTag.Data)^ > 0) then
+          if Find(ttOffsetSchema, MakerNoteOffsetTag) and (MakerNoteOffsetTag.DataType = tdLongInt) and (MakerNoteOffsetTag.ElementCount = 1) and (MakerNoteDataOffset - PLongInt(MakerNoteOffsetTag.Data)^ > 0) then
           begin
             Dec(MakerNoteDataOffset, PLongInt(MakerNoteOffsetTag.Data)^);
             PLongInt(MakerNoteOffsetTag.Data)^ := 0;

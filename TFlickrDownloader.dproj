@@ -8,7 +8,7 @@
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
         <ProjectVersion>15.3</ProjectVersion>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -75,13 +75,10 @@
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_MinorVer>5</VerInfo_MinorVer>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=0.5.2.809;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
-        <VerInfo_Build>809</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=1.0.0.1028;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
+        <VerInfo_Build>1028</VerInfo_Build>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
         <DCC_DebugInformation>true</DCC_DebugInformation>
@@ -90,20 +87,16 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_MinorVer>5</VerInfo_MinorVer>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_MapFile>3</DCC_MapFile>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=0.5.2.810;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=1.0.0.1028;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Build>810</VerInfo_Build>
+        <VerInfo_Build>1028</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -160,6 +153,10 @@
         <DCCReference Include="CCR\CCR.Exif.XMPUtils.pas"/>
         <DCCReference Include="Units\ImgSize.pas"/>
         <DCCReference Include="Units\UnitFileInfo.pas"/>
+        <DCCReference Include="Units\UnitFlickrGroupPhotoLinksDownloader.pas"/>
+        <DCCReference Include="Units\UnitDownloader.pas"/>
+        <DCCReference Include="Units\UnitEncoder.pas"/>
+        <None Include="Release\Win64\ChangeLog.txt"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -208,9 +205,15 @@
                     <VersionInfoKeys Name="Comments"/>
                 </VersionInfoKeys>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Everwood\Bin\RemObjects_Everwood_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Everwood\Bin\RemObjects_Everwood_D19.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_Core_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_Core_D19.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_D19.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_VCL_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_VCL_D19.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_FMX_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_FMX_D19.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_FMX_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_FMX_D19.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k190.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp190.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl">CodeSite Express 5.1.4</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl">File C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl not found</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

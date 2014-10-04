@@ -78,19 +78,22 @@ begin
   try
     if Assigned(LFS) then
     begin
-      LMS.CopyFrom(LFS, 5);
-      if LMS.Size > 4 then
+      if LFS.Size > 0 then
       begin
-        if CompareMem(LMS.Memory, @JPG_HEADER, SizeOf(JPG_HEADER)) then
-          Result := '.jpg'
-        else if CompareMem(LMS.Memory, @GIF_HEADER, SizeOf(GIF_HEADER)) then
-          Result := '.gif'
-        else if CompareMem(LMS.Memory, @PNG_HEADER, SizeOf(PNG_HEADER)) then
-          Result := '.png'
-        else if CompareMem(LMS.Memory, @BMP_HEADER, SizeOf(BMP_HEADER)) then
-          Result := '.bmp'
-        else if CompareMem(LMS.Memory, @TIF_HEADER, SizeOf(TIF_HEADER)) then
-          Result := '.tiff';
+      LMS.CopyFrom(LFS, 5);
+        if LMS.Size > 4 then
+        begin
+          if CompareMem(LMS.Memory, @JPG_HEADER, SizeOf(JPG_HEADER)) then
+            Result := '.jpg'
+          else if CompareMem(LMS.Memory, @GIF_HEADER, SizeOf(GIF_HEADER)) then
+            Result := '.gif'
+          else if CompareMem(LMS.Memory, @PNG_HEADER, SizeOf(PNG_HEADER)) then
+            Result := '.png'
+          else if CompareMem(LMS.Memory, @BMP_HEADER, SizeOf(BMP_HEADER)) then
+            Result := '.bmp'
+          else if CompareMem(LMS.Memory, @TIF_HEADER, SizeOf(TIF_HEADER)) then
+            Result := '.tiff';
+        end;
       end;
     end;
   finally

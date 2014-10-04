@@ -17,7 +17,6 @@
   * along with TFlickrDownloader.  If not, see <http://www.gnu.org/licenses/>.
   *
   * }
-// todo: update statusbar text
 unit UnitMain;
 
 interface
@@ -32,7 +31,8 @@ uses
   sSkinManager, sDialogs, sToolBar, acProgressBar, sComboBox, sPanel, sButton,
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
-  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfo;
+  JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfo,
+   UnitFlickrGroupPhotoLinksDownloader, sListBox;
 
 type
   TDownloadItemInfo = packed record
@@ -127,7 +127,6 @@ type
     LED8: TsImage;
     TotalProgressBar: TsGauge;
     PageProgressBar: TsGauge;
-    CurrentProgressBar: TsGauge;
     S4: TMenuItem;
     C3: TMenuItem;
     L1: TMenuItem;
@@ -144,6 +143,14 @@ type
     LED13: TsImage;
     sPanel1: TsPanel;
     ImageCountLabel: TsLabel;
+    FuncPages: TsPageControl;
+    sTabSheet3: TsTabSheet;
+    sTabSheet4: TsTabSheet;
+    sTabSheet5: TsTabSheet;
+    VisitBtn: TsBitBtn;
+    AppInstances: TJvAppInstances;
+    sPanel4: TsPanel;
+    sProgressBar1: TsProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure NewProjectBtnClick(Sender: TObject);
     procedure StartBtnClick(Sender: TObject);
@@ -176,6 +183,8 @@ type
     procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
     procedure DragDropDrop(Sender: TObject; Pos: TPoint; Value: TStrings);
     procedure FormActivate(Sender: TObject);
+    procedure VisitBtnClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
 
@@ -184,10 +193,13 @@ type
 
     // download threads
     FDownloadThreads: array [0 .. 15] of TDownloadWorker;
+    FDownloadedImgCounts: array [0 .. 15] of integer;
 
     // total size of downloaded images
     FTotalFileSize: int64;
     FPrevTotalSize: Int64;
+
+    FStopGroupImgExt: Boolean;
 
     FFormActivated: Boolean;
 
@@ -205,9 +217,9 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
 
-    function FileSize(const FilePath: string): Int64;
-
     procedure ParseInfoFile(const ProcessCount: integer);
+
+    function GetGroupID(const Link: string): string;
   public
     { Public declarations }
     ProjectInfo: TProjectInfo;
@@ -215,7 +227,6 @@ type
     Leds: array [0 .. 15] of TsImage;
 
     ProjectFilePath: string;
-
     AppDataFolder: string;
     TempFolder: string;
 
@@ -236,8 +247,8 @@ type
   end;
 
 const
-  BuildInt = 809;
-  Portable = False;
+  BuildInt = 1028;
+  Portable = True;
 
 var
   MainForm: TMainForm;
@@ -304,7 +315,7 @@ begin
   Begin
     repeat
       Application.ProcessMessages;
-      if (Search.Name = '.') or (Search.Name = '..') or (Search.Name = 'TCDRipper') then
+      if (Search.Name = '.') or (Search.Name = '..') then
         Continue;
       if FileExists(TempFolder + '\' + Search.Name) then
       begin
@@ -440,17 +451,6 @@ begin
   end;
 end;
 
-function TMainForm.FileSize(const FilePath: string): Int64;
-var
-  LInfo: TWin32FileAttributeData;
-begin
-  Result := -1;
-  if GetFileAttributesEx(PWideChar(FilePath), GetFileExInfoStandard, @LInfo) then
-  begin
-    Result := Int64(LInfo.nFileSizeLow) or Int64(LInfo.nFileSizeHigh shl 32);
-  end;
-end;
-
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   // open a project file with the program
@@ -483,7 +483,36 @@ begin
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  i: integer;
 begin
+  self.Enabled := False;
+  ThreadInfoPnl.Left := (self.Width div 2) - (ThreadInfoPnl.Width div 2);
+  ThreadInfoPnl.Top := (self.Height div 2) - (ThreadInfoPnl.Height div 2);
+  ThreadInfoPnl.Visible := True;
+  ThreadInfoPnl.BringToFront;
+  ThreadInfoPnl.Repaint;
+  Sleep(100);
+  try
+    ThreadEndProgressBar.Max := DownloadThreadsList.Items.Count;
+    for I := Low(FDownloadThreads) to High(FDownloadThreads) do
+    begin
+      if Assigned(FDownloadThreads[i]) then
+      begin
+        ThreadEndProgressBar.Position := i + 1;
+        FDownloadThreads[i].Stop;
+        while FDownloadThreads[i].DownloaderStatus = dsDownloading do
+        begin
+          Application.ProcessMessages;
+          Sleep(50);
+        end;
+      end;
+    end;
+  finally
+    ThreadEndProgressBar.Position := 0;
+    self.Enabled := True;
+    ThreadInfoPnl.Visible := False;
+  end;
   DeleteTempFiles;
   SaveSettings;
 end;
@@ -526,6 +555,7 @@ begin
 
   StatusPage.Pages[0].TabVisible := False;
   StatusPage.Pages[1].TabVisible := False;
+  StatusPage.Pages[2].TabVisible := False;
   StatusPage.ActivePageIndex := 0;
 
   // if portable then save ini file to program folder
@@ -570,6 +600,19 @@ begin
   FFormActivated := False;
 end;
 
+procedure TMainForm.FormDestroy(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := Low(FDownloadThreads) to High(FDownloadThreads) do
+  begin
+    if Assigned(FDownloadThreads[i]) then
+    begin
+      FDownloadThreads[i].Free;
+    end;
+  end;
+end;
+
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   ProgressList.Columns[1].Width := ProgressList.ClientWidth - ProgressList.Columns[0].Width - ProgressList.Columns[2].Width - 20;
@@ -583,7 +626,6 @@ begin
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
   TotalProgressBar.Progress := 0;
   PageProgressBar.Progress := 0;
-  CurrentProgressBar.Progress := 0;
   LoadSettings;
 
   // check update
@@ -602,6 +644,27 @@ begin
   finally
     FS.Free;
   end;
+end;
+
+function TMainForm.GetGroupID(const Link: string): string;
+const
+  Groups = '/groups/';
+var
+  LTmpStr: string;
+  LPos: integer;
+begin
+  LTmpStr := Link;
+  LPos := Pos(Groups, LTmpStr);
+  if LPos > 0 then
+  begin
+    LTmpStr := Trim(Copy(LTmpStr, LPos + Length(Groups), MaxInt));
+    LPos := Pos('/', LTmpStr);
+    if LPos > 0 then
+    begin
+      LTmpStr := Trim(Copy(LTmpStr, 1, LPos - 1));
+    end;
+  end;
+  Result := LTmpStr;
 end;
 
 procedure TMainForm.H2Click(Sender: TObject);
@@ -694,12 +757,12 @@ begin
         outProjectInfo.EndPage := StrToInt(LProjectfile[2]);
         outProjectInfo.ImageTypeOption := StrToInt(LProjectfile[3]);
         outProjectInfo.OutputFolder := LProjectfile[4];
-        outProjectInfo.PageLink := StringReplace(LProjectfile[5], 'https://', 'http://', [rfIgnoreCase]);
+        outProjectInfo.PageLink := StringReplace(LProjectfile[5], 'http://', 'https://', [rfIgnoreCase]);
 
         // project summary
         ProjectInfoList.Items.Clear;
         Node := ProjectInfoList.Items.AddChild(nil, 'Name: ' + LProjectfile[0]);
-        ProjectInfoList.Items.AddChild(nil, 'Page link: ' + LProjectfile[5]);
+        ProjectInfoList.Items.AddChild(nil, 'Page link: ' + StringReplace(LProjectfile[5], 'http://', 'https://', [rfIgnoreCase]));
         ProjectInfoList.Items.AddChild(nil, 'Start page: ' + LProjectfile[1]);
         ProjectInfoList.Items.AddChild(nil, 'End page: ' + LProjectfile[2]);
         if TryStrToInt(LProjectfile[3], LImgType) then
@@ -789,7 +852,7 @@ begin
   try
     LSplitList.StrictDelimiter := True;
     LSplitList.Delimiter := '|';
-    for I := 0 to ProcessCount-1 do
+    for I := 0 to ProcessCount - 1 do
     begin
       if Portable then
       begin
@@ -863,8 +926,6 @@ var
   LTotalProgress: Integer;
   // thread progress in percentage
   LThreadProgress: Integer;
-  // thread current download progress
-  LThreadCurProgress: Integer;
   j: Integer;
   LDownloadedImgCount: Integer;
   LPrevDownloadedImgCount: Integer;
@@ -903,6 +964,7 @@ begin
     if Assigned(FDownloadThreads[i]) then
     begin
       Inc(FTotalFileSize, FDownloadThreads[i].TotalSize);
+      FDownloadedImgCounts[i] := FDownloadThreads[i].PageDownloadedImageCount;
     end;
   end;
   // update the speed only when downloaded file size changes
@@ -954,11 +1016,9 @@ begin
       LTotalProgress := ((100 * LPageProgress) div (LPageCount)) + ((LThreadProgresses div LPageCount) div LActiveThreadCount);
 
     SetProgressValue(Handle, LTotalProgress, 100);
-    LThreadCurProgress := FDownloadThreads[DownloadThreadsList.ItemIndex].CurrenProgress;
     LThreadProgress := FDownloadThreads[DownloadThreadsList.ItemIndex].ThreadProgress;
     TotalProgressBar.Progress := LTotalProgress;
     PageProgressBar.Progress := LThreadProgress;
-    CurrentProgressBar.Progress := LThreadCurProgress;
   end
   else
   begin
@@ -969,13 +1029,12 @@ begin
     ThreadSpeedEdit.Text := 'N/A';
     TotalProgressBar.Progress := 0;
     PageProgressBar.Progress := 0;
-    CurrentProgressBar.Progress := 0;
     ThreadPageImgEdit.Text := 'N/A';
     ThreadTotalProcessedImgEdit.Text := 'N/A';
     ThreadPageEdit.Text := 'N/A';
   end;
   // form caption
-  self.Caption := '[' + FloatToStr(LTotalProgress) + '% ' + FloatToStr(LThreadProgress) + '% ' + FloatToStr(LThreadCurProgress) + '%] TFlickrDownloader - ' + ProjectInfo.Name;
+  self.Caption := '[' + FloatToStr(LTotalProgress) + '% ' + FloatToStr(LThreadProgress) + '%] TFlickrDownloader - ' + ProjectInfo.Name;
 
   // done
   if not LStillRunning then
@@ -1016,7 +1075,17 @@ begin
     // update image list
     LPrevDownloadedImgCount := DownloadedImageList.Items.Count;
     RefreshDownloadedImageListClick(self);
-    LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+    if SettingsForm.DontLoadImgBtn.Checked then
+    begin
+      for I := Low(FDownloadedImgCounts) to High(FDownloadedImgCounts) do
+      begin
+        Inc(LDownloadedImgCount, FDownloadedImgCounts[i]);
+      end;
+    end
+    else
+    begin
+      LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+    end;
 
     if TimePassed < 1 then
     begin
@@ -1026,15 +1095,15 @@ begin
     // show them to user.
     if LFailedAtEnd > 0 then
     begin
-      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
-        sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
+      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
+        FloatToStr(LDownloadedImgCount) + '.';
       self.Enabled := False;
       DownloadLogForm.Show;
     end
     else
     begin
-      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
-        'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
+      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
+        FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
     end;
 
   end;
@@ -1047,6 +1116,7 @@ begin
   CloseProjectBtn.Enabled := True;
   StartBtn.Enabled := True;
   OpenProjectFolderBtn.Enabled := True;
+  VisitBtn.Enabled := True;
 
   self.Caption := 'TFlickrDownloader - ' + ProjectInfo.Name;
 end;
@@ -1060,6 +1130,7 @@ begin
   CloseProjectBtn.Enabled := False;
   StartBtn.Enabled := False;
   OpenProjectFolderBtn.Enabled := False;
+  VisitBtn.Enabled := False;
 
   self.Caption := 'TFlickrDownloader';
 end;
@@ -1068,16 +1139,13 @@ procedure TMainForm.RefreshDownloadedImageListClick(Sender: TObject);
 var
   SR: TSearchRec;
   LFileExt: string;
-  ListItem: TListItem;
-  LWidth, LHeight: Word;
-  LFIThreads: array [0..15] of TFileInfo;
+  LFIThreads: array [0 .. 15] of TFileInfo;
   LFiles: TStringList;
   I: Integer;
   LStillRunning: Boolean;
   LProcessCount: integer;
-  j: Integer;
   LOutputFiles: TStringList;
-  LFilesList: array [0..15] of TStringList;
+  LFilesList: array [0 .. 15] of TStringList;
 begin
   if Length(ProjectFilePath) < 1 then
   begin
@@ -1085,6 +1153,7 @@ begin
     exit;
   end;
   PreviewImage.Picture.LoadFromFile(ExtractFileDir(Application.ExeName) + '\icon.png');
+  DownloadedImageList.Items.Clear;
   if not SettingsForm.DontLoadImgBtn.Checked then
   begin
     if DirectoryExists(ProjectInfo.OutputFolder) then
@@ -1146,25 +1215,25 @@ begin
         end;
 
         // create and run threads
-        for I := 0 to LProcessCount-1 do
+        for I := 0 to LProcessCount - 1 do
         begin
           LOutputFiles.Add(AppDataFolder + '\info' + FloatToStr(i) + '.txt');
         end;
-        for I := 0 to LProcessCount-1 do
+        for I := 0 to LProcessCount - 1 do
         begin
           LFilesList[i] := TStringList.Create;
         end;
-        for I := 0 to LFiles.Count-1 do
+        for I := 0 to LFiles.Count - 1 do
         begin
           LFilesList[i mod LProcessCount].Add(LFiles[i]);
         end;
-        for I := 0 to LProcessCount-1 do
+        for I := 0 to LProcessCount - 1 do
         begin
           LFIThreads[i] := TFileInfo.Create(LFilesList[i], LOutputFiles[i]);
         end;
         try
           LStillRunning := False;
-          for I := 0 to LProcessCount-1 do
+          for I := 0 to LProcessCount - 1 do
           begin
             if Assigned(LFIThreads[i]) then
             begin
@@ -1176,7 +1245,7 @@ begin
             Application.ProcessMessages;
             Sleep(50);
             LStillRunning := False;
-            for I := 0 to LProcessCount-1 do
+            for I := 0 to LProcessCount - 1 do
             begin
               if Assigned(LFIThreads[i]) then
               begin
@@ -1186,7 +1255,7 @@ begin
           end;
         finally
           ParseInfoFile(LProcessCount);
-          for I := 0 to LProcessCount-1 do
+          for I := 0 to LProcessCount - 1 do
           begin
             LFIThreads[i].Free;
             LFilesList[i].Free;
@@ -1253,7 +1322,7 @@ begin
   mailbody := mailbody + ' 64-bit' + NewLine;
 {$ENDIF}
   mailbody := mailbody + NewLine + 'Bugs: ' + NewLine + NewLine + NewLine + 'Suggestions: ' + NewLine + NewLine + NewLine;
-  mail := PWideChar('mailto:ozok26@gmail.com?subject=TPhotoDownloader&body=' + mailbody);
+  mail := PWideChar('mailto:ozok26@gmail.com?subject=TFlickrDownloader&body=' + mailbody);
 
   ShellExecute(0, 'open', mail, nil, nil, SW_SHOWNORMAL);
 end;
@@ -1272,13 +1341,16 @@ end;
 
 procedure TMainForm.SetLedState(const StateOn: Boolean; const ThreadID: integer);
 begin
-  if StateOn then
+  if Assigned(Leds[ThreadID]) then
   begin
-    Leds[ThreadID].ImageIndex := 0;
-  end
-  else
-  begin
-    Leds[ThreadID].ImageIndex := 1;
+    if StateOn then
+    begin
+      Leds[ThreadID].ImageIndex := 0;
+    end
+    else
+    begin
+      Leds[ThreadID].ImageIndex := 1;
+    end;
   end;
 end;
 
@@ -1288,6 +1360,9 @@ var
   LNumberofThreads: integer;
   LPageAddingIndex: integer;
   I: Integer;
+  LGPD: TGroupImagePageLinksDownloader;
+  LGroupImageLinks: TStringList;
+  LGroupLinksArray: array of TStringList;
 begin
 
   if FFirstTime then
@@ -1312,7 +1387,6 @@ begin
   // reset progress indications
   TotalProgressBar.Progress := 0;
   PageProgressBar.Progress := 0;
-  CurrentProgressBar.Progress := 0;
   ProgressList.Items.Clear;
   LPageCount := 0;
   TimePassed := 0;
@@ -1321,85 +1395,171 @@ begin
   DeleteTempFiles;
   SetProgressState(Handle, tbpsNormal);
   SetProgressValue(Handle, 0, 1000);
+  for I := Low(FDownloadedImgCounts) to High(FDownloadedImgCounts) do
+    FDownloadedImgCounts[i] := 0;
 
   // start if project is valid
   if Length(ProjectInfo.PageLink) > 0 then
   begin
     StartStatus;
 
-    self.Caption := '[0% 0% 0%] TPhotoDownloader - ' + ProjectInfo.Name;
+    self.Caption := '[0% 0%] TFlickrDownloader - ' + ProjectInfo.Name;
     TimeTimer.Enabled := True;
 
     // calculate number of threads to run
-    LPageCount := ProjectInfo.EndPage - ProjectInfo.StartPage + 1;
-    LNumberofThreads := StrToInt(SettingsForm.ThreadNumberEdit.Text);
-    if LNumberofThreads > LPageCount then
+    if ContainsText(ProjectInfo.PageLink, '/groups/') then
     begin
-      LNumberofThreads := LPageCount;
+      // number of parallel downloads isn't limited to page count here since
+      // we already have the image page links
+      LNumberofThreads := StrToInt(SettingsForm.ThreadNumberEdit.Text);
+    end
+    else
+    begin
+      // limit here is the number of pages
+      LPageCount := ProjectInfo.EndPage - ProjectInfo.StartPage + 1;
+      LNumberofThreads := StrToInt(SettingsForm.ThreadNumberEdit.Text);
+      if LNumberofThreads > LPageCount then
+      begin
+        LNumberofThreads := LPageCount;
+      end;
     end;
-
+    // set array length
+    SetLength(LGroupLinksArray, LNumberofThreads);
     // reset leds.
     for I := Low(FDownloadThreads) to High(FDownloadThreads) do
     begin
       SetLedState(False, i);
     end;
-
-    // create downloader threads.
-    // add thread items to the threadslist
-    DownloadThreadsList.Items.Clear;
-
-    for I := 0 to LNumberofThreads - 1 do
+    for I := Low(LGroupLinksArray) to High(LGroupLinksArray) do
     begin
-      FDownloadThreads[i] := TDownloadWorker.Create(ProjectInfo);
-      DownloadThreadsList.Items.Add('Thread ' + FloatToStr(i + 1));
-      FDownloadThreads[i].ThreadID := i;
-      FDownloadThreads[i].TempFolder := TempFolder;
-      FDownloadThreads[i].DontDoubleDownload := SettingsForm.DontDoubleDownloadBtn.Checked;
-      FDownloadThreads[i].ReverseDownloadOrder := SettingsForm.ReverseDownloadBtn.Checked;
+      LGroupLinksArray[i] := TStringList.Create;
     end;
+    try
+      // create downloader threads.
+      // add thread items to the threadslist
+      DownloadThreadsList.Items.Clear;
 
-    DownloadThreadsList.ItemIndex := 0;
-
-    // add pages to workers
-    // if not SettingsForm.ReverseDownloadBtn.Checked then
-    // begin
-    // add pages to be downloaded
-    LPageAddingIndex := 0;
-    for I := ProjectInfo.StartPage to ProjectInfo.EndPage do
-    begin
-      FDownloadThreads[(LPageAddingIndex mod LNumberofThreads)].PageList.Add(FloatToStr(i));
-      inc(LPageAddingIndex);
-      inc(LPageCount);
-    end;
-    // end
-    // else
-    // begin
-    // // add pages to be downloaded
-    // LPageAddingIndex := 0;
-    // for I := ProjectInfo.EndPage downto ProjectInfo.StartPage do
-    // begin
-    // FDownloadThreads[(LPageAddingIndex mod LNumberofThreads)
-    // ].PageList.Add(FloatToStr(i));
-    // inc(LPageAddingIndex);
-    // inc(LPageCount);
-    // end;
-    // end;
-
-    // start running threads
-    if LPageCount > 0 then
-    begin
-      for I := Low(FDownloadThreads) to High(FDownloadThreads) do
+      // if project is a group then first image pages are extracted then workers
+      // are started. Image page links are saved to text files.
+      if ContainsText(ProjectInfo.PageLink, '/groups/') then
       begin
-        if Assigned(FDownloadThreads[i]) then
+        FStopGroupImgExt := False;
+        StartStatus;
+        StatusPage.ActivePageIndex := 2;
+        LGroupImageLinks := TStringList.Create;
+        try
+          LGPD := TGroupImagePageLinksDownloader.Create(GetGroupID(ProjectInfo.PageLink), TempFolder, ExtractFileDir(Application.ExeName) + '\GroupImagesExtractor.exe');
+          try
+            LGPD.Start;
+            while (LGPD.ProcessID > 0) and (not FStopGroupImgExt) do
+            begin
+              Application.ProcessMessages;
+              if FStopGroupImgExt then
+              begin
+                LGPD.Stop;
+              end;
+              Sleep(50);
+            end;
+            // add links
+            if not FStopGroupImgExt then
+            begin
+              LGroupImageLinks.AddStrings(LGPD.ImageLinks);
+            end;
+          finally
+            LGPD.Stop;
+            LGPD.Free;
+          end;
+          // add links to downloaders
+          if not FStopGroupImgExt then
+          begin
+            for I := 0 to LGroupImageLinks.Count - 1 do
+            begin
+              LGroupLinksArray[i mod LNumberofThreads].Add(LGroupImageLinks[i]);
+            end;
+          end;
+        finally
+          // save group links to a file
+          if not FStopGroupImgExt then
+          begin
+            for I := Low(LGroupLinksArray) to High(LGroupLinksArray) do
+            begin
+              LGroupLinksArray[i].SaveToFile(TempFolder + '\group' + FloatToStr(i) + '.txt', TEncoding.UTF8);
+            end;
+            // start workers
+            for I := 0 to LNumberofThreads - 1 do
+            begin
+              FDownloadThreads[i] := TDownloadWorker.Create(ProjectInfo, TempFolder + '\group' + FloatToStr(i) + '.txt');
+              DownloadThreadsList.Items.Add('Thread ' + FloatToStr(i + 1));
+              FDownloadThreads[i].ThreadID := i;
+              FDownloadThreads[i].TempFolder := TempFolder;
+              FDownloadThreads[i].DontDoubleDownload := SettingsForm.DontDoubleDownloadBtn.Checked;
+              FDownloadThreads[i].ReverseDownloadOrder := SettingsForm.ReverseDownloadBtn.Checked;
+            end;
+            DownloadThreadsList.ItemIndex := 0;
+          end;
+        end;
+        if FStopGroupImgExt then
         begin
-          FDownloadThreads[i].Start;
+          LGroupImageLinks.Clear;
+        end;
+        // start running threads
+        if LGroupImageLinks.Count > 0 then
+        begin
+          for I := Low(FDownloadThreads) to High(FDownloadThreads) do
+          begin
+            if Assigned(FDownloadThreads[i]) then
+            begin
+              FDownloadThreads[i].Start;
+            end;
+          end;
+          StartStatus;
+          StatusPage.ActivePageIndex := 1;
+          TimeTimer.Enabled := True;
+          ProgressTimer.Enabled := True;
+        end;
+        LGroupImageLinks.free;
+      end
+      else
+      begin
+        for I := 0 to LNumberofThreads - 1 do
+        begin
+          FDownloadThreads[i] := TDownloadWorker.Create(ProjectInfo, '');
+          DownloadThreadsList.Items.Add('Thread ' + FloatToStr(i + 1));
+          FDownloadThreads[i].ThreadID := i;
+          FDownloadThreads[i].TempFolder := TempFolder;
+          FDownloadThreads[i].DontDoubleDownload := SettingsForm.DontDoubleDownloadBtn.Checked;
+          FDownloadThreads[i].ReverseDownloadOrder := SettingsForm.ReverseDownloadBtn.Checked;
+        end;
+        DownloadThreadsList.ItemIndex := 0;
+        // add pages to be downloaded
+        LPageAddingIndex := 0;
+        for I := ProjectInfo.StartPage to ProjectInfo.EndPage do
+        begin
+          FDownloadThreads[(LPageAddingIndex mod LNumberofThreads)].PageList.Add(i);
+          inc(LPageAddingIndex);
+          inc(LPageCount);
+        end;
+        // start running threads
+        if LPageCount > 0 then
+        begin
+          for I := Low(FDownloadThreads) to High(FDownloadThreads) do
+          begin
+            if Assigned(FDownloadThreads[i]) then
+            begin
+              FDownloadThreads[i].Start;
+            end;
+          end;
+          StartStatus;
+          StatusPage.ActivePageIndex := 1;
+          TimeTimer.Enabled := True;
+          ProgressTimer.Enabled := True;
         end;
       end;
-
-      StartStatus;
-      StatusPage.ActivePageIndex := 1;
-      TimeTimer.Enabled := True;
-      ProgressTimer.Enabled := True;
+    finally
+      for I := Low(LGroupLinksArray) to High(LGroupLinksArray) do
+      begin
+        LGroupLinksArray[i].Free;
+      end;
     end;
   end
   else
@@ -1434,14 +1594,13 @@ var
   LLogItem: TListItem;
   LPrevDownloadedImgCount, LDownloadedImgCount: Integer;
 begin
-
   if ID_NO = Application.MessageBox('Do you want to stop downloading?', 'Stop', MB_ICONQUESTION or MB_YESNO) then
   begin
     exit;
   end;
 
   StopStatus;
-
+  FStopGroupImgExt := True;
   self.Enabled := False;
   ThreadInfoPnl.Left := (self.Width div 2) - (ThreadInfoPnl.Width div 2);
   ThreadInfoPnl.Top := (self.Height div 2) - (ThreadInfoPnl.Height div 2);
@@ -1451,12 +1610,17 @@ begin
   Sleep(100);
   try
     ThreadEndProgressBar.Max := DownloadThreadsList.Items.Count;
-    for I := 0 to 7 do
+    for I := Low(FDownloadThreads) to High(FDownloadThreads) do
     begin
       if Assigned(FDownloadThreads[i]) then
       begin
         ThreadEndProgressBar.Position := i + 1;
         FDownloadThreads[i].Stop;
+        while FDownloadThreads[i].DownloaderStatus = dsDownloading do
+        begin
+          Application.ProcessMessages;
+          Sleep(50);
+        end;
       end;
     end;
   finally
@@ -1487,7 +1651,17 @@ begin
   // update image list
   LPrevDownloadedImgCount := DownloadedImageList.Items.Count;
   RefreshDownloadedImageListClick(self);
-  LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+  if SettingsForm.DontLoadImgBtn.Checked then
+  begin
+    for I := Low(FDownloadedImgCounts) to High(FDownloadedImgCounts) do
+    begin
+      Inc(LDownloadedImgCount, FDownloadedImgCounts[i]);
+    end;
+  end
+  else
+  begin
+    LDownloadedImgCount := DownloadedImageList.Items.Count - LPrevDownloadedImgCount;
+  end;
 
   if TimePassed < 1 then
   begin
@@ -1497,15 +1671,15 @@ begin
   // show them to user.
   if LFailedAtEnd > 0 then
   begin
-    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
-      sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
+    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
+      FloatToStr(LDownloadedImgCount) + '.';
     self.Enabled := False;
     DownloadLogForm.Show;
   end
   else
   begin
-    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
-      'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
+    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
+      FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
   end;
   for I := Low(Leds) to High(Leds) do
     SetLedState(False, i);
@@ -1518,7 +1692,6 @@ begin
   StatusBar.Panels[2].Text := '';
   TotalProgressBar.Progress := 0;
   PageProgressBar.Progress := 0;
-  CurrentProgressBar.Progress := 0;
   self.Caption := 'TFlickrDownloader - ' + ProjectInfo.Name;
 
   self.BringToFront;
@@ -1586,6 +1759,11 @@ begin
   end;
 
   UpdateThread.CancelExecute;
+end;
+
+procedure TMainForm.VisitBtnClick(Sender: TObject);
+begin
+  ShellExecute(0, 'open', PWideChar(ProjectInfo.PageLink), nil, nil, SW_SHOWNORMAL);
 end;
 
 end.

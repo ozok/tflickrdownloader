@@ -1185,14 +1185,12 @@ end;
 
 function TTiffParser.ParseSubDirectory(const OffsetTag: ITiffTag; out Directory: IFoundTiffDirectory): Boolean;
 begin
-  Result := PossibleSubIFDOffset(OffsetTag.ID, OffsetTag.DataType, OffsetTag.ElementCount) and TFoundTiffDirectory.TryCreate(Self, OffsetTag.Parent, OffsetTag.ID, LoadOffsetArray(OffsetTag)[0],
-    Directory);
+  Result := PossibleSubIFDOffset(OffsetTag.ID, OffsetTag.DataType, OffsetTag.ElementCount) and TFoundTiffDirectory.TryCreate(Self, OffsetTag.Parent, OffsetTag.ID, LoadOffsetArray(OffsetTag)[0], Directory);
 end;
 
 function TTiffParser.ParseSubDirectory(const Parent: ITiffDirectory; const OffsetTag: TTiffTagInfo; out Directory: IFoundTiffDirectory): Boolean;
 begin
-  Result := PossibleSubIFDOffset(OffsetTag.ID, OffsetTag.DataType, OffsetTag.ElementCount) and TFoundTiffDirectory.TryCreate(Self, Parent, OffsetTag.ID, LoadOffsetArray(Self, OffsetTag)[0],
-    Directory);
+  Result := PossibleSubIFDOffset(OffsetTag.ID, OffsetTag.DataType, OffsetTag.ElementCount) and TFoundTiffDirectory.TryCreate(Self, Parent, OffsetTag.ID, LoadOffsetArray(Self, OffsetTag)[0], Directory);
 end;
 
 { TTiffDirectoryRewriter.TTagToWrite }

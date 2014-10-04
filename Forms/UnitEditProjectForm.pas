@@ -44,6 +44,7 @@ type
     EndPageEdit: TsSpinEdit;
     OutputDirectoryEdit: TsDirectoryEdit;
     StartPageEdit: TsSpinEdit;
+    sSkinProvider1: TsSkinProvider;
     procedure CancelBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GetPageCountBtnClick(Sender: TObject);
@@ -90,18 +91,21 @@ begin
     sPanel1.Visible := true;
     sPanel1.BringToFront;
     Self.Enabled := False;
+    Self.Repaint;
+    sPanel1.Repaint;
     try
       // remove https
-      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
+      PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'http://', 'https://', [rfIgnoreCase]);
       LPCE := TPhotoStreamPageCountExtractor.Create(PageLinkEdit.Text, MainForm.TempFolder + '\pagecount.txt');
       try
         LPCE.Start();
         while LPCE.ExtractorStatus = pceDownloading do
         begin
           Application.ProcessMessages;
-          Sleep(10);
+          Sleep(50);
         end;
         EndPageEdit.Value := LPCE.LastPage;
+        StartPageEdit.Text := '1';
       finally
         LPCE.Free;
       end;
@@ -132,7 +136,7 @@ begin
       end;
     end;
     // remove https
-    PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'https://', 'http://', [rfIgnoreCase]);
+    PageLinkEdit.Text := StringReplace(PageLinkEdit.Text, 'http://', 'https://', [rfIgnoreCase]);
 
     if (Length(StartPageEdit.Text) > 0) and (Length(EndPageEdit.Text) > 0) then
     begin

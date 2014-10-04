@@ -51,8 +51,8 @@ type
   TXMPSchema = class;
   TXMPPacket = class;
 
-  TXMPNamespace = (xsUnknown, xsRDF, xsCameraRaw, xsColorant, xsDimensions, xsDublinCore, xsFont, xsExif, xsExifAux, xsIPTC, xsJob, xsMicrosoftPhoto, xsPDF, xsPhotoshop, xsResourceEvent { * } ,
-    xsResourceRef { * } , xsThumbnail, xsTIFF, xsVersion, xsXMPBasic, xsXMPBasicJobTicket, xsXMPDynamicMedia, xsXMPMediaManagement, xsXMPPagedText, xsXMPRights);
+  TXMPNamespace = (xsUnknown, xsRDF, xsCameraRaw, xsColorant, xsDimensions, xsDublinCore, xsFont, xsExif, xsExifAux, xsIPTC, xsJob, xsMicrosoftPhoto, xsPDF, xsPhotoshop, xsResourceEvent { * } , xsResourceRef { * } , xsThumbnail, xsTIFF,
+    xsVersion, xsXMPBasic, xsXMPBasicJobTicket, xsXMPDynamicMedia, xsXMPMediaManagement, xsXMPPagedText, xsXMPRights);
   TXMPKnownNamespace = xsRDF .. High(TXMPNamespace);
 
   TKnownXMPNamespaces = record // personally I wouldn't have the 'T', but I'll keep with the D2009+ style...

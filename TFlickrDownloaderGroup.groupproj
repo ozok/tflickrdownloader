@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{FC9D2F40-227F-42F2-A2B0-E9F25891CD5C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="TFlickrDownloader.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GroupImagesExtractor.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TFlickrDownloader">
+        <MSBuild Projects="TFlickrDownloader.dproj"/>
+    </Target>
+    <Target Name="TFlickrDownloader:Clean">
+        <MSBuild Projects="TFlickrDownloader.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TFlickrDownloader:Make">
+        <MSBuild Projects="TFlickrDownloader.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GroupImagesExtractor">
+        <MSBuild Projects="GroupImagesExtractor.dproj"/>
+    </Target>
+    <Target Name="GroupImagesExtractor:Clean">
+        <MSBuild Projects="GroupImagesExtractor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GroupImagesExtractor:Make">
+        <MSBuild Projects="GroupImagesExtractor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TFlickrDownloader;GroupImagesExtractor"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TFlickrDownloader:Clean;GroupImagesExtractor:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TFlickrDownloader:Make;GroupImagesExtractor:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

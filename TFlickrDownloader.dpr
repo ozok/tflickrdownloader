@@ -36,7 +36,10 @@ uses
   ImgSize in 'Units\ImgSize.pas',
   UnitFileInfo in 'Units\UnitFileInfo.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  UnitFlickrGroupPhotoLinksDownloader in 'Units\UnitFlickrGroupPhotoLinksDownloader.pas',
+  UnitDownloader in 'Units\UnitDownloader.pas',
+  UnitEncoder in 'Units\UnitEncoder.pas';
 
 {$R *.res}
 

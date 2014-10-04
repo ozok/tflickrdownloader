@@ -5,7 +5,7 @@ object DownloadLogForm: TDownloadLogForm
   Caption = 'Log'
   ClientHeight = 378
   ClientWidth = 645
-  Color = 3355443
+  Color = 13946053
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -57,7 +57,7 @@ object DownloadLogForm: TDownloadLogForm
     BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
     Align = alClient
-    Color = 3355443
+    Color = clWhite
     Columns = <
       item
         Caption = 'Link'
@@ -69,7 +69,7 @@ object DownloadLogForm: TDownloadLogForm
         Width = 180
       end>
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 15724527
+    Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []

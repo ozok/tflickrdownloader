@@ -23,7 +23,7 @@ unit UnitWarning;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, 
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sSkinProvider,
   sRadioButton, sButton;
 
@@ -79,4 +79,4 @@ begin
   Button1.Enabled := OKRDBtn.Checked;
 end;
 
-end.
+end.
