@@ -7,7 +7,7 @@
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>15.3</ProjectVersion>
+        <ProjectVersion>16.0</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -46,6 +46,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <SanitizedProjectName>TFlickrDownloader</SanitizedProjectName>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1055</VerInfo_Locale>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
@@ -75,10 +76,12 @@
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_MinorVer>1</VerInfo_MinorVer>
+        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=1.0.0.1028;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
-        <VerInfo_Build>1028</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TPhotoDownloader;FileVersion=1.1.0.1046;InternalName=TPhotoDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TPhotoDownloader;OriginalFilename=TPhotoDownloader.exe;ProductName=TPhotoDownloader;ProductVersion=1.0.0.0;Comments=TPhotoDownloader</VerInfo_Keys>
+        <VerInfo_Build>1046</VerInfo_Build>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
         <DCC_DebugInformation>true</DCC_DebugInformation>
@@ -87,16 +90,17 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
+        <VerInfo_MinorVer>1</VerInfo_MinorVer>
         <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <DCC_ExeOutput>.\$(Config)\$(Platform)</DCC_ExeOutput>
         <DCC_MapFile>3</DCC_MapFile>
         <Icon_MainIcon>TPhotoDownloader_Icon.ico</Icon_MainIcon>
-        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=1.0.0.1028;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=ozok;FileDescription=TFlickrDownloader;FileVersion=1.1.0.1045;InternalName=TFlickrDownloader;LegalCopyright=2014 (c) ozok;LegalTrademarks=TFlickrDownloader;OriginalFilename=TFlickrDownloader.exe;ProductName=TFlickrDownloader;ProductVersion=1.0.0.0;Comments=TFlickrDownloader</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Build>1028</VerInfo_Build>
+        <VerInfo_Build>1045</VerInfo_Build>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -205,15 +209,8 @@
                     <VersionInfoKeys Name="Comments"/>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Everwood\Bin\RemObjects_Everwood_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Everwood\Bin\RemObjects_Everwood_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_Core_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_Core_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_VCL_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_VCL_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_FMX_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_FMX_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_FMX_D19.bpl">File C:\Program Files (x86)\RemObjects Software\Hydra for Delphi\Dcu\D19\win32\Hydra_IDE_FMX_D19.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k190.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp190.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl">File C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

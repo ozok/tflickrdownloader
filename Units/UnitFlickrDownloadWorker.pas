@@ -129,7 +129,8 @@ end;
 procedure TDownloadWorker.AddToLog(const LogItem: string);
 begin
   FThreadLog.Add(LogItem);
-  FThreadLog.SaveToFile(FTempFolder + '\thread' + FloatToStr(FThreadID) + '.txt', TEncoding.UTF8);
+  FThreadLog.SaveToFile('C:\flk.txt', TEncoding.UTF8);
+  // FThreadLog.SaveToFile(FTempFolder + '\thread' + FloatToStr(FThreadID) + '.txt', TEncoding.UTF8);
 end;
 
 constructor TDownloadWorker.Create(const ProjectInfo: TProjectInfo; const GroupImagePageLinksPath: string);
@@ -152,7 +153,7 @@ begin
   FPageImageCount := 0;
   FFailedList := TList<TFailedItem>.Create;
   FGroupImagePageLinksPath := GroupImagePageLinksPath;
-  FGroupMode := FileExists(fGroupImagePageLinksPath);
+  FGroupMode := FileExists(FGroupImagePageLinksPath);
   FThreadLog := TStringList.Create;
 end;
 
@@ -208,22 +209,22 @@ begin
 
 {$REGION 'delete temp file block'}
     // delete text files from previous pages
-    if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt') then
-    begin
-      DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt')
-    end;
-    if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt') then
-    begin
-      DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt')
-    end;
-    if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photopage.txt') then
-    begin
-      DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photopage.txt')
-    end;
-    if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photostreampage.txt') then
-    begin
-      DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photostreampage.txt')
-    end;
+    // if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt') then
+    // begin
+    // DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt')
+    // end;
+    // if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt') then
+    // begin
+    // DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt')
+    // end;
+    // if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photopage.txt') then
+    // begin
+    // DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photopage.txt')
+    // end;
+    // if FileExists(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photostreampage.txt') then
+    // begin
+    // DeleteFile(FProjectInfo.OutputFolder + '\' + FProjectInfo.Name + LPageIndex + '_photostreampage.txt')
+    // end;
 {$ENDREGION}
 
     // reset image progress
@@ -266,6 +267,7 @@ begin
           end
           else if LIPE.ExtractorStatus = iesDone then
           begin
+            AddToLog('Downloaded the main page');
             FStatusText := 'Downloaded the main page [Page: ' + LPageIndex + ']';
           end
           else
@@ -283,6 +285,7 @@ begin
 
     if FDownloadingImages then
     begin
+      AddToLog('Converting links');
       FStatusText := 'Converting links';
       if FGroupMode then
       begin
@@ -290,24 +293,43 @@ begin
       end
       else
       begin
-        PIP := TImagePageParser.Create(FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt', FProjectInfo.ImageTypeOption, FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt');
+        PIP := TImagePageParser.Create(FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_pages.txt', FProjectInfo.ImageTypeOption,
+          FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt');
       end;
       try
         PIP.ConvertLinks;
         if FileExists(PIP.ImagePageLinkFilePath) then
         begin
+          AddToLog('Parsing image links');
           FStatusText := 'Parsing image links';
 
           // open imagepages.txt and read links from it
           if FGroupMode then
           begin
+            AddToLog('Reading image links for group');
+            if not FileExists(FTempFolder + '\' + FProjectInfo.Name + FloatToStr(FThreadID) + '_imagepages.txt') then
+            begin
+              AddToLog('Unabla to find: ' + FProjectInfo.Name + FloatToStr(FThreadID) + '_imagepages.txt');
+            end;
             LImagePageLinksFile := TStreamReader.Create(FTempFolder + '\' + FProjectInfo.Name + FloatToStr(FThreadID) + '_imagepages.txt', True);
+
           end
           else
           begin
+            AddToLog('Reading image links');
+            if not FileExists(FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt') then
+            begin
+              AddToLog('Unabla to find: ' + FProjectInfo.Name + LPageIndex + '_imagepages.txt');
+            end;
             LImagePageLinksFile := TStreamReader.Create(FTempFolder + '\' + FProjectInfo.Name + LPageIndex + '_imagepages.txt', True);
+
           end;
+
           try
+            if LImagePageLinksFile.EndOfStream then
+            begin
+              AddToLog('End of stream');
+            end;
             while not LImagePageLinksFile.EndOfStream do
             begin
               if not FDownloadingImages then
@@ -320,6 +342,7 @@ begin
               // read line as a link
               LImagePageStr := Trim(LImagePageLinksFile.ReadLine);
               FCurrentLink := LImagePageStr;
+              AddToLog(LImagePageStr);
 
               if FDownloadingImages then
               begin

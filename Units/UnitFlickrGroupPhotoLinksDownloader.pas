@@ -106,7 +106,7 @@ end;
 
 procedure TGroupImagePageLinksDownloader.ProcessRead(Sender: TObject; const S: string; const StartsOnNewLine: Boolean);
 begin
-//  MainForm.FlickrGroupExtractList.Items.Add(Trim(S));
+  // MainForm.FlickrGroupExtractList.Items.Add(Trim(S));
 end;
 
 procedure TGroupImagePageLinksDownloader.ProcessTerminate(Sender: TObject; ExitCode: Cardinal);
@@ -138,4 +138,3 @@ begin
 end;
 
 end.
-

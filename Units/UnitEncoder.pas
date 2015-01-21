@@ -156,7 +156,7 @@ begin
         FProcess.Run;
       end
       else
-         ShowMessage('encoder')
+        ShowMessage('encoder')
     end
     else
       ShowMessage('0 cmd')
@@ -174,4 +174,3 @@ begin
 end;
 
 end.
-

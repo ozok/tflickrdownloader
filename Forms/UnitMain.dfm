@@ -1265,8 +1265,6 @@ object MainForm: TMainForm
           SkinData.SkinSection = 'BUTTON'
           ImageIndex = 5
           Images = ToolBarImgs
-          ExplicitLeft = 468
-          ExplicitTop = -6
         end
         object DonateBtn: TsBitBtn
           Left = 698
@@ -1411,8 +1409,6 @@ object MainForm: TMainForm
           TabOrder = 8
           OnClick = DonateBtnClick
           SkinData.SkinSection = 'BUTTON'
-          ExplicitLeft = 701
-          ExplicitTop = -6
         end
         object VisitBtn: TsBitBtn
           Left = 304
@@ -2278,10 +2274,6 @@ object MainForm: TMainForm
             Caption = 'Extracting group photos, please wait...'
             TabOrder = 0
             SkinData.SkinSection = 'PANEL'
-            ExplicitLeft = 296
-            ExplicitTop = 184
-            ExplicitWidth = 185
-            ExplicitHeight = 41
             object sProgressBar1: TsProgressBar
               Left = 1
               Top = 386
@@ -2293,9 +2285,6 @@ object MainForm: TMainForm
               SmoothReverse = True
               TabOrder = 0
               SkinData.SkinSection = 'GAUGE'
-              ExplicitLeft = 0
-              ExplicitTop = 216
-              ExplicitWidth = 764
             end
           end
         end
@@ -6794,6 +6783,7 @@ object MainForm: TMainForm
     ThirdParty.ThirdUpDown = ' '
     ThirdParty.ThirdScrollBar = ' '
     ThirdParty.ThirdStaticText = ' '
+    ThirdParty.ThirdNativePaint = ' '
     Left = 120
     Top = 352
   end

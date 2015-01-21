@@ -27,7 +27,7 @@ uses Classes, SysUtils, StrUtils, IdBaseComponent, IdComponent, IdTCPConnection,
   IdSSLOpenSSL, System.Types;
 
 type
-  TDownloaderStatus = (ds2Downloading, ds2Done, ds2Error);
+  TDownloaderStatus = (ds2Downloading, ds2Done, ds2Error, ds3Error);
 
 type
   TDownloader = class(TObject)
@@ -77,7 +77,7 @@ begin
   end;
 
   FStatus := ds2Downloading;
-  FURL := Url;
+  FURL := URL;
   FErrorMsg := '';
 end;
 
@@ -99,7 +99,7 @@ begin
       FPageDownloader.Get(FURL, LMS);
     except
       on E: Exception do
-        // report it
+         raise Exception.Create(E.Message);
     end;
     if LMS.Size > 0 then
     begin

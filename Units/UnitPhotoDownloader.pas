@@ -228,7 +228,7 @@ begin
     begin
       FStatus := pdsDownloading;
       try
-        FPageDownloader.URL := FURL;
+        FPageDownloader.Url := FURL;
         FPageDownloader.OutputFileName := FOutputFileName;
         // wait until downloading is done
         FPageDownloader.Start;
@@ -249,7 +249,7 @@ begin
       begin
         FStatus := pdsDownloading;
         try
-          FPageDownloader.URL := FURL;
+          FPageDownloader.Url := FURL;
           FPageDownloader.OutputFileName := FOutputFileName;
           FPageDownloader.Start;
           // wait until downloading is done
@@ -276,7 +276,7 @@ begin
     // download anyways
     FStatus := pdsDownloading;
     try
-      FPageDownloader.URL := FURL;
+      FPageDownloader.Url := FURL;
       FPageDownloader.OutputFileName := FOutputFileName;
       FPageDownloader.Start;
       // wait until downloading is done

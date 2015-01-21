@@ -195,7 +195,7 @@ procedure TPhotoStreamPageCountExtractor.ThreadRun(Sender: TIdThreadComponent);
 begin
   FStatus := pceDownloading;
   try
-    FPageDownloader.URL := FURL;
+    FPageDownloader.Url := FURL;
     FPageDownloader.OutputFileName := FTempFile;
     FPageDownloader.Start;
     // wait until downloading is done

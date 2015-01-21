@@ -213,6 +213,7 @@ object EditProjectForm: TEditProjectForm
     ParentFont = False
     TabOrder = 2
     Text = ''
+    CheckOnExit = True
     BoundLabel.Active = True
     BoundLabel.Caption = 'Download folder:'
     BoundLabel.Indent = 0

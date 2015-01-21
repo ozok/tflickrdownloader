@@ -32,7 +32,7 @@ uses
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
   JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfo,
-   UnitFlickrGroupPhotoLinksDownloader, sListBox;
+  UnitFlickrGroupPhotoLinksDownloader, sListBox;
 
 type
   TDownloadItemInfo = packed record
@@ -248,7 +248,7 @@ type
 
 const
   BuildInt = 1028;
-  Portable = True;
+  Portable = False;
 
 var
   MainForm: TMainForm;
@@ -1095,15 +1095,15 @@ begin
     // show them to user.
     if LFailedAtEnd > 0 then
     begin
-      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
-        FloatToStr(LDownloadedImgCount) + '.';
+      DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
+        sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
       self.Enabled := False;
       DownloadLogForm.Show;
     end
     else
     begin
-      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
-        FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
+      Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
+        'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
     end;
 
   end;
@@ -1517,7 +1517,7 @@ begin
           TimeTimer.Enabled := True;
           ProgressTimer.Enabled := True;
         end;
-        LGroupImageLinks.free;
+        LGroupImageLinks.Free;
       end
       else
       begin
@@ -1671,15 +1671,15 @@ begin
   // show them to user.
   if LFailedAtEnd > 0 then
   begin
-    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
-      FloatToStr(LDownloadedImgCount) + '.';
+    DownloadLogForm.ProgressInfoLabel.Caption := 'Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' +
+      sLineBreak + 'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.';
     self.Enabled := False;
     DownloadLogForm.Show;
   end
   else
   begin
-    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak + 'Downloaded image count: ' +
-      FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
+    Application.MessageBox(PChar('Finished downloading in ' + IntToTime(TimePassed) + '.' + sLineBreak + 'Download speed: ' + FloatToStr(FTotalFileSize div TimePassed) + ' KB/s.' + sLineBreak +
+      'Downloaded image count: ' + FloatToStr(LDownloadedImgCount) + '.'), 'Finished', MB_ICONINFORMATION);
   end;
   for I := Low(Leds) to High(Leds) do
     SetLedState(False, i);

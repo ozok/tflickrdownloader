@@ -47,10 +47,10 @@ type
 
 type
   TExifInfo = packed record
-    Camera, Exposure, Aperture, FocalLength, ISOSpeed, ExposureBias, Flash, XResolution, YResolution, Orientation, Software, DateandTimeModified, YCbCrPositioning, ExposureProgram, DateandTimeOriginal, DateandTimeDigitized, MeteringMode,
-      SubSecTimeDigitized, ColorSpace, FocalPlaneXResolution, FocalPlaneYResolution, CustomRendered, ExposureMode, WhiteBalance, SceneCaptureType, Compression, GlobalAngle, GlobalAltitude, CopyrightFlag, PhotoshopQuality, PhotoshopFormat,
-      ProgressiveScans, XMPToolkit, CreatorTool, MetadataDate, Format, ColorMode, ICCProfileName, ViewingConditionsIlluminantType, MeasurementObserver, MeasurementFlare, MeasurementIlluminant, ColorTransform, FlashReturn, FlashMode,
-      FlashFunction, FlashRedEyeMode: string;
+    Camera, Exposure, Aperture, FocalLength, ISOSpeed, ExposureBias, Flash, XResolution, YResolution, Orientation, Software, DateandTimeModified, YCbCrPositioning, ExposureProgram,
+      DateandTimeOriginal, DateandTimeDigitized, MeteringMode, SubSecTimeDigitized, ColorSpace, FocalPlaneXResolution, FocalPlaneYResolution, CustomRendered, ExposureMode, WhiteBalance,
+      SceneCaptureType, Compression, GlobalAngle, GlobalAltitude, CopyrightFlag, PhotoshopQuality, PhotoshopFormat, ProgressiveScans, XMPToolkit, CreatorTool, MetadataDate, Format, ColorMode,
+      ICCProfileName, ViewingConditionsIlluminantType, MeasurementObserver, MeasurementFlare, MeasurementIlluminant, ColorTransform, FlashReturn, FlashMode, FlashFunction, FlashRedEyeMode: string;
   end;
 
 implementation

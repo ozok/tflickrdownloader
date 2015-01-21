@@ -149,7 +149,7 @@ begin
   LJSONStr := '';
 
   FStatus := iesDownloading;
-  try
+  try       ShowMessage((FTempFile));
     if FileExists(FTempFile) then
     begin
       LTmpStr := TStreamReader.Create(FTempFile, True);
@@ -194,6 +194,10 @@ begin
         FreeAndNil(LTmpStr);
         FreeAndNil(LStreamWriter);
       end;
+    end
+    else
+    begin
+
     end;
 
     // try to extract data from json
