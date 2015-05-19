@@ -22,7 +22,7 @@ unit UnitImagePagesExtractor;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, System.Types, UnitDownloader, dialogs;
+uses Classes, Windows, SysUtils, Messages, StrUtils, System.Types, UnitDownloader;
 
 type
   TIPEStatus = (iesDownloading, iesDone, iesError);
@@ -45,6 +45,7 @@ type
     function RemoveHTMLTags(const Str: string): string;
     function RemoveWith(const Str: string):string;
     procedure WriteJSONData(const JSONStr: string);
+    procedure WriteJSONData2(const JSONStr: string);
     function IsLinkAlreadyAdded(const Link: string):Boolean;
     function GetGroupLink(const Str: string):string;
     procedure ParsePage;
@@ -131,6 +132,7 @@ end;
 procedure TImagePagesExtractor.ParsePage;
 const
   PhotoContainerStr = '<span class="photo_container pc_ju">';
+  PhotoContainerStrNew = 'modelExport: ';
   GroupContainerStr = '<div id="photo-display-container">';
   GroupLinkStartStr = 'href="/photos/';
   YLIST = 'Y.listData = ';
@@ -139,6 +141,7 @@ var
   LStreamWriter: TStreamWriter;
   LLine: string;
   LJSONStr: string;
+  LJSONStr2: string;
   I: Integer;
 //  LTmpList: TStringList;
 //  LLine2: string;
@@ -149,7 +152,7 @@ begin
   LJSONStr := '';
 
   FStatus := iesDownloading;
-  try       ShowMessage((FTempFile));
+  try
     if FileExists(FTempFile) then
     begin
       LTmpStr := TStreamReader.Create(FTempFile, True);
@@ -177,7 +180,7 @@ begin
           end
           else
           begin
-            if Copy(LLine, 1, Length(PhotoContainerStr)) = PhotoContainerStr then
+            if (Copy(LLine, 1, Length(PhotoContainerStr)) = PhotoContainerStr) then
             begin
               LStreamWriter.WriteLine('https://www.flickr.com' + RemoveHTMLTags(LTmpStr.ReadLine));
             end
@@ -185,6 +188,10 @@ begin
             begin
               LJSONStr := ReplaceStr(LLine, YLIST, '');
             end
+            else if (Copy(LLine, 1, Length(PhotoContainerStrNew)) = PhotoContainerStrNew) then
+            begin
+              LJSONStr2 := ReplaceStr(LLine, PhotoContainerStrNew, '');
+            end;
           end;
         end;
       finally
@@ -194,16 +201,16 @@ begin
         FreeAndNil(LTmpStr);
         FreeAndNil(LStreamWriter);
       end;
-    end
-    else
-    begin
-
     end;
 
     // try to extract data from json
     if Length(LJSONStr) > 0 then
     begin
       WriteJSONData(LJSONStr);
+    end;
+    if LJSONStr2.Length > 0 then
+    begin
+      WriteJSONData2(LJSONStr2);
     end;
   finally
     FStatus := iesDone;
@@ -303,6 +310,77 @@ begin
     FreeAndNil(LTmpLst);
   end;
 
+end;
+
+procedure TImagePagesExtractor.WriteJSONData2(const JSONStr: string);
+const
+  START_STR = 'photo-stats-models';
+  END_STR = 'album-privacy-models';
+  SETS_STR = 'sets';
+var
+  LTmpLst: TStringList;
+  LStreamWriter: TStreamWriter;
+  I: Integer;
+  LLink: string;
+  LStartIndex: integer;
+  LEndIndex: integer;
+  LURL: string;
+  LPos: integer;
+begin
+
+  LTmpLst := TStringList.Create;
+  try
+    LTmpLst.StrictDelimiter := True;
+    LTmpLst.Delimiter := '"';
+    LTmpLst.DelimitedText := JSONStr;
+
+    LStartIndex := -1;
+    LEndIndex := -1;
+    for I := 0 to LTmpLst.Count-1 do
+    begin
+      if LTmpLst[i].Trim = START_STR then
+      begin
+        LStartIndex := i;
+        Break;
+      end;
+    end;
+    for I := 0 to LTmpLst.Count-1 do
+    begin
+      if LTmpLst[i].Trim = END_STR then
+      begin
+        LEndIndex := i;
+        Break;
+      end;
+    end;
+    LPos := Pos(SETS_STR, FURL);
+    if LPos > 0 then
+    begin
+      LURL := FURL.Substring(0, LPos-1);
+      if LStartIndex < LEndIndex then
+      begin
+        for I := LStartIndex to LEndIndex do
+        begin
+          if 'id' = LTmpLst[i] then
+          begin
+            LLink := LURL + StringReplace(LTmpLst[i+2], '\', '', [rfReplaceAll]);
+            if not IsLinkAlreadyAdded(LLink) then
+            begin
+              LStreamWriter := TStreamWriter.Create(FOutputFilePath, True);
+              try
+                LStreamWriter.WriteLine(LLink);
+              finally
+                LStreamWriter.Flush;
+                LStreamWriter.Close;
+                FreeAndNil(LStreamWriter);
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(LTmpLst);
+  end;
 end;
 
 end.

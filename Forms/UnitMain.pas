@@ -151,6 +151,7 @@ type
     AppInstances: TJvAppInstances;
     sPanel4: TsPanel;
     sProgressBar1: TsProgressBar;
+    L2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure NewProjectBtnClick(Sender: TObject);
     procedure StartBtnClick(Sender: TObject);
@@ -185,6 +186,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure VisitBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure L2Click(Sender: TObject);
   private
     { Private declarations }
 
@@ -247,8 +249,8 @@ type
   end;
 
 const
-  BuildInt = 1028;
-  Portable = False;
+  BuildInt = 1053;
+  Portable = True;
 
 var
   MainForm: TMainForm;
@@ -727,6 +729,12 @@ end;
 procedure TMainForm.L1Click(Sender: TObject);
 begin
   ShellExecute(0, 'open', PWideChar(ExtractFileDir(Application.ExeName) + '\gpl.txt'), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TMainForm.L2Click(Sender: TObject);
+begin
+  self.Enabled := False;
+  DownloadLogForm.Show;
 end;
 
 function TMainForm.LoadProject(const ProjectFilePath: string; out outProjectInfo: TProjectInfo): Boolean;

@@ -77,10 +77,6 @@ object AboutForm: TAboutForm
       Caption = 'About'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label2: TsLabel
         Left = 0
         Top = 57
@@ -89,7 +85,7 @@ object AboutForm: TAboutForm
         Align = alTop
         Alignment = taCenter
         AutoSize = False
-        Caption = 'TFlickrDownloader 1.0.0.1028'
+        Caption = 'TFlickrDownloader 1.1.0.1053'
         ExplicitLeft = 3
       end
       object Image1: TImage
@@ -422,10 +418,6 @@ object AboutForm: TAboutForm
       Caption = '3rd Party'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label7: TsLabel
         Left = 0
         Top = 25
@@ -490,6 +482,7 @@ object AboutForm: TAboutForm
     AddedTitle.Font.Height = -11
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
+    FormHeader.AdditionalHeight = 0
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
     Left = 192

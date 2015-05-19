@@ -155,14 +155,8 @@ begin
         FProcess.CommandLine := FCommandLines[0];
         FProcess.Run;
       end
-      else
-        ShowMessage('encoder')
     end
-    else
-      ShowMessage('0 cmd')
   end
-  else
-    ShowMessage('not 0')
 end;
 
 procedure TEncoder.Stop;

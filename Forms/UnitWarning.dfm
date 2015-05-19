@@ -6,7 +6,7 @@ object WarningForm: TWarningForm
   Caption = 'Warning'
   ClientHeight = 182
   ClientWidth = 645
-  Color = 3355443
+  Color = 13946053
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -91,6 +91,7 @@ object WarningForm: TWarningForm
     AddedTitle.Font.Height = -11
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
+    FormHeader.AdditionalHeight = 0
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
     Left = 312

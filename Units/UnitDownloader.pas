@@ -27,7 +27,7 @@ uses Classes, SysUtils, StrUtils, IdBaseComponent, IdComponent, IdTCPConnection,
   IdSSLOpenSSL, System.Types;
 
 type
-  TDownloaderStatus = (ds2Downloading, ds2Done, ds2Error, ds3Error);
+  TDownloaderStatus = (ds2Downloading, ds2Done, ds2Error);
 
 type
   TDownloader = class(TObject)
@@ -73,7 +73,7 @@ begin
     IOHandler := FSSLHandler;
     RedirectMaximum := 35;
     HandleRedirects := True;
-    Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0';
+    Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.105 Safari/537.36 Vivaldi/1.0.162.9';
   end;
 
   FStatus := ds2Downloading;
@@ -96,10 +96,14 @@ begin
   FStatus := ds2Downloading;
   try
     try
+      FErrorMsg := '';
       FPageDownloader.Get(FURL, LMS);
     except
       on E: Exception do
-         raise Exception.Create(E.Message);
+      begin
+        FErrorMsg := E.Message;
+        FStatus := ds2Error;
+      end;
     end;
     if LMS.Size > 0 then
     begin

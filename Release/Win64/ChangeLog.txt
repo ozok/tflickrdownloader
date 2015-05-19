@@ -1,3 +1,8 @@
+--1.1
+-Fixed: Program was unable to download from new streams due to changes in flickr
+-Fixed: 64bit version would complain about being unable to load ssl library in some cases
+-Updated: Internal libraries
+
 --1.0
 -Added: Support for flickr groups
 -Added: Support for https links
