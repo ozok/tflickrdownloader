@@ -77,6 +77,10 @@ object AboutForm: TAboutForm
       Caption = 'About'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label2: TsLabel
         Left = 0
         Top = 57
@@ -418,6 +422,10 @@ object AboutForm: TAboutForm
       Caption = '3rd Party'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label7: TsLabel
         Left = 0
         Top = 25

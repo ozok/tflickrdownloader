@@ -1,5 +1,5 @@
 { *
-  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
   *
   * This file is part of TFlickrDownloader.
   *
@@ -32,7 +32,7 @@ uses
   sListView, sTreeView, sLabel, sPageControl, sStatusBar, sBevel, sGauge,
   sBitBtn, sGroupBox, sSkinProvider, sEdit, acImage, IniFiles, JvThread,
   JvUrlListGrabber, JvUrlGrabbers, JvDragDrop, ImgSize, StrUtils, UnitFileInfo,
-  UnitFlickrGroupPhotoLinksDownloader, sListBox;
+  UnitFlickrGroupPhotoLinksDownloader, sListBox, System.ImageList;
 
 type
   TDownloadItemInfo = packed record
@@ -250,7 +250,7 @@ type
 
 const
   BuildInt = 1053;
-  Portable = True;
+  Portable = False;
 
 var
   MainForm: TMainForm;

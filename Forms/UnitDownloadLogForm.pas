@@ -1,5 +1,5 @@
 { *
-  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
   *
   * This file is part of TFlickrDownloader.
   *
@@ -26,7 +26,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls,
   JvExComCtrls, JvListView, Vcl.ImgList, acAlphaImageList, Vcl.StdCtrls, ShellAPI,
-  sLabel, sListView, sSkinProvider;
+  sLabel, sListView, sSkinProvider, System.ImageList;
 
 type
   TDownloadLogForm = class(TForm)
